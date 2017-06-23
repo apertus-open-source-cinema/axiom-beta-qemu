@@ -1,3 +1,6 @@
+These scripts are currently tailored for being run on Ubuntu/Debian based systems as they acquire dependencies through apt-get.
+
+
 # axiom-beta-qemu
 QEMU emulation of the AXIOM Beta hardware / software
 
