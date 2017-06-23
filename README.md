@@ -11,30 +11,33 @@ First you need to build and install the QEMU. For that, go open the terminal on 
 
 `./build_qemu.sh`
 
-Note: This will download QEMU form Xilinx QEMU repo. Therefore you need to have internet conneciton while running this script. Also provide system password to install QEMU.
+Note: This will download QEMU form the Xilinx QEMU repo. Therefore you need to have a good internet connection while running this script. Also provide the system password to install QEMU.
 
 # Step 2-[A]: Build Xilinx Kernel 4.6.0
-Note: You need to follow either Step 2-[A] or 2-[B].
-If you are hope to run Kernel 4.6.0, then run this step. If you are hoping to run Kernel4.9.0, then follow step 2-[B]. However, as we tested, Kernel4.6.0 work properly on QEMU.
-To build Kernel4.6.0, run following commands on terminal opened in axiom-beta-qemu repo folder.
+Note: You need to follow either Step 2-[A] or 2-[B]. Step 2-[A] is to build Kernel 4.6.0 and step 2-[B] is for build Kernel 4.9.0. 
+
+If you are going to run Kernel 4.6.0, then follow this step. As we tested, Kernel 4.6.0 works properly on QEMU.
+
+To build Kernel 4.6.0, run the following commands on a terminal opened in axiom-beta-qemu repo folder.
 
 `chmod +x build_kernel4.6.0.sh`
 
 `./build_kernel4.6.0.sh`
  
-Note: This will download Xilinx linux kernel newest verion. Therefore you need to have a good internet connection while running this script.
+Note: This will download Xilinx linux kernel at the newest verion. Therefore you need to have a good internet connection while running this script.
 
 # Step 2-[B]: Build Xilinx Kernel 4.9.0
-Note: You need to follow either Step 2-[A] or 2-[B].
-This step will build Xilinx Kernel 4.9.0. How ever at the moment, this kernel verion will not run on QEMU properly. Recomend to use Kernel 4.6.0.
+Note: You need to follow either Step 2-[A] or 2-[B]. Step 2-[A] is to build Kernel 4.6.0 and step 2-[B] is for build Kernel 4.9.0. 
 
-To build Kernel 4.9.0, run following commands on terminal opend in axiom-beta-qemu repo folder.
+This step will build Xilinx Kernel 4.9.0. At the moment, this kernel verion will not run on QEMU properly. We recomend to use Kernel 4.6.0.
+
+To build Kernel 4.9.0, run the following commands on a terminal opened in axiom-beta-qemu repo folder.
 
 `chmod +x build_kernel4.9.0.sh`
 
 `./build_kernel4.9.0.sh`
 
-Note: This will download Xilinx linux kernel newest verion. Therefore you need to have a good internet connection while running this script.
+Note: This will download Xilinx linux kernel at the newest verion. Therefore you need to have a good internet connection while running this script.
 
 # Step 3: Download AXIOM Beta image
 To download AXIOM Beta image, run the following commands.
@@ -43,10 +46,10 @@ To download AXIOM Beta image, run the following commands.
 
 `./download_axiom_beta_image.sh`
 
-Note: This will download arround 3.7GB. Run following commands on terminal opend in axiom-beta-qemu repo folder
+Note: This will download arround 3.7GB.
 
 # Step 4: Run QEMU
-To run the QEMU use the following commands on terminal opend in axiom-beta-qemu repo folder.
+To run the QEMU use the following commands on a terminal opened in axiom-beta-qemu repo folder.
 
 `chmod +x turn_on_qemu.sh`
 
