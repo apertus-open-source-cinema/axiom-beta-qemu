@@ -6,7 +6,7 @@ sudo apt-get install build-essential gcc-arm-linux-gnueabi libglib2.0-dev zlib1g
 
 echo "	****Getting the source****"
 # get the git repo
-https://github.com/Xilinx/linux-xlnx.git
+git clone https://github.com/Xilinx/linux-xlnx.git
 
 # go into source folder
 cd linux-xlnx
