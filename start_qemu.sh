@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd AXIOM_Beta_VM
+cd AXIOM_BETA_VM
 
 echo "	****TURNING ON QEMU****"
 

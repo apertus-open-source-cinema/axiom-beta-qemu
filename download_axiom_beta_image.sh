@@ -2,7 +2,7 @@
 
 echo "	****Downloading Image****"
 # download the image
-mkdir AXIOM_Beta_VM
+mkdir AXIOM_BETA_VM
 cd AXIOM_BETA_VM
 wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/beta_20170109.dd.xz
 wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/devicetree.dtb
