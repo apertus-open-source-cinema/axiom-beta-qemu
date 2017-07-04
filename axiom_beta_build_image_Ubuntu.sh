@@ -38,7 +38,11 @@ wget -c http://archlinuxarm.org/os/ArchLinuxARM-zedboard-latest.tar.gz
 sudo tar --warning=no-unknown-keyword -x -C ROOT.fs -f ArchLinuxARM-zedboard-latest.tar.gz
 
 
-git clone --branch $BRANCH https://github.com/Xilinx/linux-xlnx.git linux-xlnx.git
+# git clone --branch $BRANCH https://github.com/Xilinx/linux-xlnx.git linux-xlnx.git
+
+git clone https://github.com/Xilinx/linux-xlnx.git
+
+(cd linux-xlnx.git; git checkout tags/xilinx-v2016.4 -b xilinx-v2016.4 )
 
 (cd linux-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH xilinx_zynq_defconfig )
 
