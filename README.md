@@ -4,48 +4,63 @@ These scripts are currently tailored for being run on Ubuntu/Debian based system
 # axiom-beta-qemu
 QEMU emulation of the AXIOM Beta hardware / software
 
-This scripts will help you to run AXIOM Beta OS on QEMU.
-Follow the following steps to build and run the QEMU.
+These scripts will help you to run the AXIOM Beta OS on QEMU.
 
-# Step 1: Build and Installing QEMU 
-First you need to build and install the QEMU. For that, go open the terminal on axiom-beta-qemu repo folder and run the following commands.
+To get started, make sure you have a good internet connection
+and at least (!) 25 GB of free space, then clone the repository
+and follow the steps below.
 
-`./build_qemu.sh`
+    git clone https://github.com/apertus-open-source-cinema/axiom-beta-qemu
+    cd axiom-beta-qemu
 
-Note: This will download QEMU from the Xilinx QEMU repo. Therefore you need to have a good internet connection while running this script. Also provide the system password to install QEMU.
+## Step 1: Build and Install QEMU
+You will need to install QEMU from the Xilinx repository;
+run this script at the command prompt:
 
-# Step 2-[A]: Build Xilinx Kernel 4.6.0
-Note: You need to follow either Step 2-[A] or 2-[B]. Step 2-[A] is to build Kernel 4.6.0 and step 2-[B] is for build Kernel 4.9.0. 
+    ./build_qemu.sh
 
-If you are going to run Kernel 4.6.0, then follow this step. As we tested, Kernel 4.6.0 works properly on QEMU.
+See http://www.wiki.xilinx.com/QEMU for additional info.
+After QEMU is built, you will have to provide the system password to install it.
 
-To build Kernel 4.6.0, run the following commands on a terminal opened in axiom-beta-qemu repo folder.
+## Step 2: Build the Linux kernel from Xilinx
 
-`./build_kernel4.6.0.sh`
- 
-Note: This will download Xilinx linux kernel at the newest verion. Therefore you need to have a good internet connection while running this script.
+Note: You need to install either kernel 4.6.0 (recommended)
+or kernel 4.9.0 (not fully working yet).
 
-# Step 2-[B]: Build Xilinx Kernel 4.9.0
-Note: You need to follow either Step 2-[A] or 2-[B]. Step 2-[A] is to build Kernel 4.6.0 and step 2-[B] is for build Kernel 4.9.0. 
+### Step 2A: Build Xilinx Linux kernel 4.6.0
 
-This step will build Xilinx Kernel 4.9.0. At the moment, this kernel verion will not run on QEMU properly. We recomend to use Kernel 4.6.0.
+To download and build this kernel, run:
 
-To build Kernel 4.9.0, run the following commands on a terminal opened in axiom-beta-qemu repo folder.
+    ./build_kernel4.6.0.sh
 
-`./build_kernel4.9.0.sh`
+As we tested, kernel 4.6.0 works properly on QEMU.
 
-Note: This will download Xilinx linux kernel at the newest verion. Therefore you need to have a good internet connection while running this script.
+### Step 2B: Build Xilinx Linux kernel 4.9.0
 
-# Step 3: Download AXIOM Beta image
-To download AXIOM Beta image, run the following commands.
+This will download the latest (git) version of the Xilinx Linux kernel.
+However, at the moment, this kernel verion will not run on QEMU properly.
+If you are confident you can fix it, run:
 
-`./download_axiom_beta_image.sh`
+    ./build_kernel4.9.0.sh
 
-Note: This will download arround 3.7GB.
+## Step 3: Download AXIOM Beta image
+To download the AXIOM Beta image, run the following script:
 
-# Step 4: Run QEMU
-To run the QEMU use the following commands on a terminal opened in axiom-beta-qemu repo folder.
+    ./download_axiom_beta_image.sh
 
-`./start_qemu.sh`
+Note: This will download around 3.7GB.
 
-Note: After completing Steps 1,2 and 3 for one time, you don't need to run those steps everytime. By running only step 4 will able to run QEMU.
+## Step 4: Run QEMU
+
+This will start the Axiom BETA firmware in QEMU.
+
+    ./start_qemu.sh
+
+Wait until you get the login prompt and... start hacking.
+
+## Next steps
+
+- wiki page: [AXIOM_Beta_QEMU](https://wiki.apertus.org/index.php/AXIOM_Beta_QEMU)
+- add examples (using GDB, debugging devices etc)
+- create the Beta image from scratch
+- emulate the hardware devices present in the Beta
