@@ -38,9 +38,14 @@ wget -c http://archlinuxarm.org/os/ArchLinuxARM-zedboard-latest.tar.gz
 sudo tar --warning=no-unknown-keyword -x -C ROOT.fs -f ArchLinuxARM-zedboard-latest.tar.gz
 
 
-# git clone --branch $BRANCH https://github.com/Xilinx/linux-xlnx.git linux-xlnx.git
+#git clone --branch $BRANCH https://github.com/Xilinx/linux-xlnx.git linux-xlnx.git
 
-git clone https://github.com/Xilinx/linux-xlnx.git
+git clone https://github.com/Xilinx/linux-xlnx.git linux-xlnx.git
+#(cd linux-xlnx.git; wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/kernel-4.6.0-xilinx-00016-gb49271f.config)
+#(cd linux-xlnx.git; mv kernel-4.6.0-xilinx-00016-gb49271f.config .config)
+#(cd linux-xlnx.git; make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- oldconfig)
+#(cd linux-xlnx.git; make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-)
+#(cd linux-xlnx.git; INSTALL_MOD_PATH=../ROOT.fs make modules_install ARCH=arm)
 
 (cd linux-xlnx.git; git checkout tags/xilinx-v2016.4 -b xilinx-v2016.4 )
 
