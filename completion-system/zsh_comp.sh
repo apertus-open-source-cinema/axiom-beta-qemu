@@ -1,0 +1,150 @@
+#!/bin/zsh
+# Copyright (c) 2017, MIT Licensed, Medicine Yeh
+
+axiom_image_list=""
+axiom_update_flag=0
+
+source "$AXIOM_HOME/completion-system/comp_helper.sh"
+
+function _complete_runQEMU() {
+    local prev_arg=$words[${CURRENT}-1]
+    local cur_arg=$words[${CURRENT}]
+    local num_args=${#words[@]} # Including the current cursor argument
+    local curr_arg_num=$CURRENT
+    local s_words=(${words})
+    if [[ "${s_words[1]}" == "axiom" ]]; then
+        s_words=(${s_words:1})        # Shift one argument
+        num_args=$(( $num_args - 1 )) # Shift one argument
+        curr_arg_num=$(( $curr_arg_num - 1 ))
+    fi
+    local options=('-h:Display help message and information of usage.' \
+        '--help:Display help message and information of usage.' \
+        '-g:Use gdb to run QEMU for debugging' \
+        '-gg:Run QEMU with remote gdb mode to debug guest program' \
+        '-smp:Number of cores (default: 1)' \
+        '-m:Size of memory (MB) (default: 1024)' \
+        '-snapshot:Run with read only guest image' \
+        '-enable-kvm:Enable KVM' \
+        '--drive:Hook another disk image to guest' \
+        '-mem-path:Use file to allocate guest memory (ex: -mem-path /dev/hugepages)' \
+        '-trace:Use QEMU trace API with specified events' \
+        )
+    if [[ $axiom_update_flag == 0 ]]; then
+        axiom_update_flag=1
+        axiom_image_list=$(_get_image_list)
+    fi
+
+    case "$prev_arg" in
+        "--drive" | "-mem-path")
+            _alternative 'files:filenames:_files'
+            ;;
+        "-m" | "-smp")
+            # Do no completion here
+            ;;
+        *)
+            if [[ $curr_arg_num == 2 ]]; then
+                _sep_parts "($axiom_image_list)"
+            else
+                _describe -V 'values' options
+            fi
+            ;;
+    esac
+}
+
+function _complete_image_and_path() {
+    local cur_arg=$words[${#words[@]}]
+
+    if [[ $axiom_update_flag == 0 ]]; then
+        axiom_update_flag=1
+        axiom_image_list=$(_get_image_list)
+    fi
+
+    if [[ "$cur_arg" != *"@"* ]]; then
+        # Complete image when typing before @
+        _sep_parts "($axiom_image_list)" @/
+    else
+        # Complete path when typing after @
+        local image_name=${cur_arg%%@*}
+        local target_dir=${cur_arg##*@}
+
+        user_mount_image "$image_name"
+
+        if [[ -d "$axiom_comp_rootfs" ]] && compset -P '*@/'; then
+            _files -W "$axiom_comp_rootfs"
+        fi
+    fi
+}
+
+function _complete_image_manager() {
+    local prev_arg=$words[${CURRENT}-1]
+    local cur_arg=$words[${CURRENT}]
+    local num_args=${#words[@]} # Including the current cursor argument
+    local curr_arg_num=$CURRENT
+    local s_words=(${words})
+    if [[ "${s_words[1]}" == "axiom" ]]; then
+        s_words=(${s_words:1})        # Shift one argument
+        num_args=$(( $num_args - 1 )) # Shift one argument
+        curr_arg_num=$(( $curr_arg_num - 1 ))
+    fi
+    local operation=${s_words[2]}
+    local options=('-h:Display help message and information of usage.' \
+        '--help:Display help message and information of usage.' \
+        )
+    local actions=('list:List all existing images' \
+        'push:Push a file/folder into image' \
+        'pull:Pull a file/folder from image' \
+        'ls:List files in image folder' \
+        'rm:Remove file/folder from image' \
+        'mkdir:Make a folder in image' \
+        )
+
+    case "$operation" in
+        "push")
+            [[ $curr_arg_num == 3 ]] &&  _alternative 'files:filenames:_files'
+            [[ $curr_arg_num == 4 ]] &&  _complete_image_and_path
+            ;;
+        "pull")
+            [[ $curr_arg_num == 3 ]] &&  _complete_image_and_path
+            [[ $curr_arg_num == 4 ]] &&  _alternative 'files:filenames:_files'
+            ;;
+        "ls" | "rm" | "mkdir")
+            [[ $curr_arg_num == 3 ]] &&  _complete_image_and_path
+            ;;
+        *)
+            # We are now in second argument
+            if [[ $curr_arg_num == 2 ]]; then
+                _describe -V 'values' options
+                _describe -V 'values' actions
+            fi
+            ;;
+    esac
+}
+
+function _complete_axiom() {
+    local options=('qemu:Run QEMU emulation' \
+        'image:Manipulate guest images' \
+        'tmux:Startup a tmux UI with preset panes/windows' \
+        )
+
+    case "${words[2]}" in
+        "qemu")
+            _complete_runQEMU
+            ;;
+        "image")
+            _complete_image_manager
+            ;;
+        "phase")
+            ;;
+        "tmux")
+            ;;
+        *)
+            _describe -V 'values' options
+            ;;
+    esac
+}
+
+compdef _complete_axiom axiom
+compdef _complete_runQEMU runQEMU.sh
+compdef _complete_image_manager image_manager.sh
+autoload colors && colors
+
