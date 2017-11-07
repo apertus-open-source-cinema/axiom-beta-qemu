@@ -124,7 +124,7 @@ function _complete_image_manager() {
 
 function _complete_axiom() {
     local cur_arg=${COMP_WORDS[COMP_CWORD]}
-    local options="qemu image tmux"
+    local options="qemu image"
 
     case "${COMP_WORDS[1]}" in
         "qemu")
@@ -132,8 +132,6 @@ function _complete_axiom() {
             ;;
         "image")
             _complete_image_manager
-            ;;
-        "tmux")
             ;;
         *)
             COMPREPLY=( $(compgen -W "${options}" -- ${cur_arg}) )
