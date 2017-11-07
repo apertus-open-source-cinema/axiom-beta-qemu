@@ -20,6 +20,7 @@ script:
     - source ./install_command.sh
     - ./download.sh
     - ./guest-images/dev/microzed-image-1.2/build.sh
+    - ./do_test.expect "echo Hello World" 5
 
 notifications:
   email: false
