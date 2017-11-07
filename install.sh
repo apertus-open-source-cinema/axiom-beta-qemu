@@ -8,6 +8,7 @@
 
 function install_debian_packages() {
     local BASIC_DEPS=(
+        sudo
         wget
         git
         e2fsprogs
@@ -15,11 +16,14 @@ function install_debian_packages() {
         dosfstools
         bc
         python
-        python2
         openssl
         expect
         fakeroot
         fakechroot
+        fuse
+        libfuse-dev
+        pkg-config
+        autopoint
     )
     local QEMU_DEPS=(
         # Required packages
@@ -30,7 +34,7 @@ function install_debian_packages() {
         # Additional packages
         libnfs-dev
         libiscsi-dev
-        gtk2-devel
+        libgtk2.0-dev
         libaio-dev
         libgcrypt20-dev
         # Others
@@ -43,7 +47,7 @@ function install_debian_packages() {
     local EXTRA_DEPS=(
         qemu-user-static
     )
-    apt-get update
+    apt-get -y -qq update
 
     # Define which developer package set should be installed
     local BASE_DEVEL=build-essential
@@ -63,6 +67,7 @@ function install_arch_packages() {
 
     # NOTE: Do not use base-devel directly!!!!!! It's conflict with gcc-libs-multilib
     local BASIC_DEPS=(
+        sudo
         wget
         git
         e2fsprogs
@@ -75,6 +80,10 @@ function install_arch_packages() {
         expect
         fakeroot
         fakechroot
+        fuse
+        fuse3
+        fuse-common
+        pkg-config
     )
     local QEMU_DEPS=(
         # Required packages
@@ -120,6 +129,7 @@ function install_centos_packages() {
 
     # NOTE: Do not use base-devel directly!!!!!! It's conflict with gcc-libs-multilib
     local BASIC_DEPS=(
+        sudo
         wget
         git
         e2fsprogs
@@ -127,11 +137,13 @@ function install_centos_packages() {
         dosfstools
         bc
         python
-        python2
         openssl
         expect
         fakeroot
         fakechroot
+        fuse
+        libfuse-devel
+        pkg-config
     )
     local QEMU_DEPS=(
         # Required packages
