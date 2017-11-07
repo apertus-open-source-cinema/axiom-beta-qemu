@@ -25,11 +25,11 @@ function find_image_list() {
             -name "*.fs" \
         \) \
         -prune -o \
-        -type f \( \
+        \( -type l -o -type f \) \( \
             -name "ext[1-5]" -o \
             -name "IMAGE.dd" -o \
             -name "*.img" \
-        \) -exec file {} \; 2>/dev/null)
+        \) -exec file -L {} \; 2>/dev/null)
 
     echo "$possible_list"
 }
@@ -74,7 +74,7 @@ function pretty_print_list() {
         printf "%-40s  %-20s  %-20s\n" \
                "${name}" \
                $(get_image_type "${f}") \
-               $(du -h "${f}" | cut -f1)
+               $(du -L -h "${f}" | cut -f1)
     done
 }
 
