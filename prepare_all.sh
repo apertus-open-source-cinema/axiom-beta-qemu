@@ -2,6 +2,7 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
+VIRT_ROOT_DIR="${SCRIPT_DIR}/virt-root"
 COLOR_RED='\033[1;31m'
 COLOR_GREEN='\033[1;32m'
 COLOR_YELLOW='\033[1;33m'
@@ -76,19 +77,39 @@ function prepare_guest_image() {
 function prepare_external() {
     echo -e "#    ${COLOR_GREEN}Prepare external tools${NC}"
 
-    mkdir -p "$SCRIPT_DIR/bin"
+    mkdir -p "${VIRT_ROOT_DIR}/bin" "${VIRT_ROOT_DIR}/sbin"
     if check_command mbrfs; then
-        cd "$SCRIPT_DIR/external/mbrfs"
+        cd "${SCRIPT_DIR}/external/mbrfs"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/mbrfs"
-        cp "$SCRIPT_DIR/external/mbrfs/mbrfs" "$SCRIPT_DIR/bin"
+        cp "${SCRIPT_DIR}/external/mbrfs/mbrfs" "${VIRT_ROOT_DIR}/sbin/mbrfs"
     fi
     if check_command ext4fuse; then
-        cd "$SCRIPT_DIR/external/ext4fuse"
+        cd "${SCRIPT_DIR}/external/ext4fuse"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/ext4fuse"
-        cp "$SCRIPT_DIR/external/ext4fuse/ext4fuse" "$SCRIPT_DIR/bin"
+        cp "$SCRIPT_DIR/external/ext4fuse/ext4fuse" "${VIRT_ROOT_DIR}/sbin/ext4fuse"
     fi
+    if [[ "$(mkfs.ext4 2>&1 | grep root-directory)" == "" ]]; then
+        # System mkfs.ext4 does not support root-directory option
+        mkdir -p "${SCRIPT_DIR}/external/e2fsprogs/build"
+        cd "${SCRIPT_DIR}/external/e2fsprogs/build"
+        ../configure --prefix="$VIRT_ROOT_DIR"
+        make -j$(nproc)
+        make install
+    fi
+    # TODO Check what type of sfdisk would cause a problem, at least ArchLinux works
+    if check_command pacman; then
+        # System sfdisk does not support creating MBR partition table properly
+        mkdir -p "${SCRIPT_DIR}/external/util-linux/build"
+        cd "${SCRIPT_DIR}/external/util-linux/build"
+        ../autogen.sh
+        ../configure --prefix="$VIRT_ROOT_DIR"
+        make sfdisk -j$(nproc)
+        cp ./sfdisk "${VIRT_ROOT_DIR}/sbin"
+    fi
+    # Make the virtual root directory temporarily work in this tty session
+    export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
 }
 
 function test_binary_dep() {
@@ -117,7 +138,7 @@ function test_binary_dep() {
             echo -e "${COLOR_YELLOW}Please copy and paste the following line to your ~/.bashrc or ~/.zshrc${NC}"
             echo "export PATH=\$PATH:${dir_path}/bin"
             echo -e "\n\n"
-            # Make it temporary work for this script.
+            # Make it temporarily work for this script.
             export PATH=${dir_path}/bin:$PATH
         else
             echo "Linaro ARM gcc can be found here. Please downlaod it and add it to the \$PATH."

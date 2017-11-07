@@ -10,3 +10,11 @@
 	path = external/ext4fuse
 	url = https://github.com/gerard/ext4fuse
 	ignore = dirty
+[submodule "external/util-linux"]
+	path = external/util-linux
+	url = https://github.com/karelzak/util-linux
+	ignore = dirty
+[submodule "external/e2fsprogs"]
+	path = external/e2fsprogs
+	url = https://github.com/tytso/e2fsprogs
+	ignore = dirty

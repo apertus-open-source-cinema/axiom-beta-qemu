@@ -15,4 +15,4 @@ guest-images/*
 .macaddr
 
 # Generated binary directory
-bin
+virt-root/
