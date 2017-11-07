@@ -152,3 +152,5 @@ test_binary_dep
 init_git
 prepare_external
 prepare_xilinx_qemu
+
+exit 0

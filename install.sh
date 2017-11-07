@@ -232,3 +232,5 @@ elif command_exist yum; then
     echo "CentOS, Fedora"
     install_centos_packages
 fi
+
+exit 0

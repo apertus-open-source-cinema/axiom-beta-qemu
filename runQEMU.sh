@@ -157,3 +157,5 @@ fi
 
 # Execute QEMU
 $QEMU "${QEMU_ARGS[@]}"
+
+exit 0
