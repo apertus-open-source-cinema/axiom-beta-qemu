@@ -66,14 +66,6 @@ function prepare_xilinx_qemu() {
     [[ $? != 0 ]] && print_message_and_exit "QEMU make"
 }
 
-function prepare_guest_image() {
-    echo -e "#    ${COLOR_GREEN}Prepare guest_image${NC}"
-
-    cd "$SCRIPT_DIR"
-    ./download.sh
-    [[ $? != 0 ]] && print_message_and_exit "Download pre-built image"
-}
-
 function prepare_external() {
     echo -e "#    ${COLOR_GREEN}Prepare external tools${NC}"
 
@@ -148,8 +140,15 @@ function test_binary_dep() {
     fi
 }
 
+# A magic option to help facilitate build environment in other projects
+if [[ "$1" == "-i" ]]; then
+    # Install only, don't build QEMU and other stuffs
+    test_binary_dep
+    init_git
+    prepare_external
+    exit 0
+fi
 test_binary_dep
 init_git
-prepare_xilinx_qemu
-prepare_guest_image
 prepare_external
+prepare_xilinx_qemu
