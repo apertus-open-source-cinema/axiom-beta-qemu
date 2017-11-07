@@ -15,13 +15,11 @@ before_install:
 
 # Do not use root to test the script
 script:
-    - pwd
-    - echo $TRAVIS_BUILD_DIR
     - sudo ./install.sh
     - echo -e "y\n" | ./prepare_all.sh
     - source ./install_command.sh
     - ./download.sh
-    - ./guest-images/dev/microzed-image-1.1/build.sh
+    - ./guest-images/dev/microzed-image-1.2/build.sh
 
 notifications:
   email: false

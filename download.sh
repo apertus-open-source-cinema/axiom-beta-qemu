@@ -7,11 +7,11 @@ IMAGE_DIR="$SCRIPT_PATH/guest-images"
 # Format: [OUTPUT PATH]/<RENAMED COMPRESSED FILE NAME>
 # Where the OUTPUT PATH is optional since the compressed file might already contain
 # the directory hierarchy we need, i.e., release version.
-files=('dev/testimage-v1.1.tar.gz')
+files=('dev/testimage-v1.2.tar.gz')
 
-links=('https://github.com/MedicineYeh/microzed-image/archive/v1.1.tar.gz')
+links=('https://github.com/MedicineYeh/microzed-image/archive/v1.2.tar.gz')
 
-sha256sums=('2b3bcfad17ae3c94641712d380ca47c3350c052045f1d809763d517b98c9b6ac')
+sha256sums=('a925aa25c9a631777a127d567ac1f624ba6d06c65bd4570015c1114f7bfdac4e')
 
 function check_sha256() {
     local sum=$(sha256sum -b "$1" | cut -d " " -f1)
