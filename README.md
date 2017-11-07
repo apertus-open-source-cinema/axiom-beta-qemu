@@ -15,6 +15,8 @@ All the scripts are designed to be run at any directory. Feel free and safe to r
 4. `./guest-images/dev/microzed-image-1.2/build.sh`
 5. `./run_image.sh dev/microzed-image-1.2`
 
+NOTE: If you fail on command not found or any problem, try `source ./install_command.sh` and then do it again. This will force system using the binaries comes with this repo.
+
 # AXIOM command (shell function)
 1. `source ./install_command.sh`
 2. `axiom image list`
