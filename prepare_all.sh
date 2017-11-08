@@ -105,7 +105,7 @@ function prepare_external() {
 }
 
 function test_binary_dep() {
-    local cmds=(gcc git make wget curl sudo)
+    local cmds=(gcc git make wget curl sudo chroot fakeroot rsync)
 
     for c in ${cmds[*]}; do
         check_command "$c" && echo -e "Required command ${COLOR_RED}${c}${NC} not found"
