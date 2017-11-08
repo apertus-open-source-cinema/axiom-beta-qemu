@@ -19,7 +19,7 @@ script:
     - echo -e "y\n" | ./prepare_all.sh
     - source ./install_command.sh
     - ./download.sh
-    - ./guest-images/dev/microzed-image-1.2/build.sh
+    - ./guest-images/dev/microzed-image-1.3/build.sh
     - ./do_test.expect "echo Hello World" 5
 
 notifications:

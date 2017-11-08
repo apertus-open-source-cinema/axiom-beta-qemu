@@ -12,16 +12,16 @@ All the scripts are designed to be run at any directory. Feel free and safe to r
 1. `sudo ./install.sh`
 2. `./prepare_all.sh`
 3. `./download.sh`
-4. `./guest-images/dev/microzed-image-1.2/build.sh`
-5. `./run_image.sh dev/microzed-image-1.2`
+4. `./guest-images/dev/microzed-image-1.3/build.sh`
+5. `./run_image.sh dev/microzed-image-1.3`
 
 NOTE: If you fail on command not found or any problem, try `source ./install_command.sh` and then do it again. This will force system using the binaries comes with this repo.
 
 # AXIOM command (shell function)
 1. `source ./install_command.sh`
 2. `axiom image list`
-3. `axiom image pull dev/microzed-image-1.2@/p2/etc/`
-4. `axiom qemu dev/microzed-image-1.2`
+3. `axiom image pull dev/microzed-image-1.3@/p2/etc/`
+4. `axiom qemu dev/microzed-image-1.3`
 
 # AXIOM command completion
 Completion system is available for `axiom`, `image_manager.sh` and `runQEMU.sh`.
@@ -40,7 +40,7 @@ mkdir  -- Make a folder in image
 
 ## You can also tab all the way through the file system in image
 ``` zsh
-$ axiom image push README.md dev/microzed-image-1.2@/etc/<TAB>
+$ axiom image push README.md dev/microzed-image-1.3@/etc/<TAB>
 rch-release      fstab             iproute2/         login.defs        modprobe.d/       pacman.d/         resolvconf.conf   systemd/        
 bash.bash_logout  gai.conf          iptables/         logrotate.conf    modules-load.d/   pam.d/            rpc               tmpfiles.d/     
 bash.bashrc       group ..................
