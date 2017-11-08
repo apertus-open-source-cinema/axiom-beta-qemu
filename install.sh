@@ -24,6 +24,7 @@ function install_debian_packages() {
         libfuse-dev
         pkg-config
         autopoint
+        rsync
     )
     local QEMU_DEPS=(
         # Required packages
@@ -84,6 +85,7 @@ function install_arch_packages() {
         fuse3
         fuse-common
         pkg-config
+        rsync
     )
     local QEMU_DEPS=(
         # Required packages
@@ -144,6 +146,7 @@ function install_centos_packages() {
         fuse
         libfuse-devel
         pkg-config
+        rsync
     )
     local QEMU_DEPS=(
         # Required packages
