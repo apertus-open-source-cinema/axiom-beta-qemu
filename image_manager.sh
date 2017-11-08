@@ -148,6 +148,11 @@ function concatenate_path() {
     echo "${out_path}"
 }
 
+function get_user_group_id() {
+    sudo test -r "$1" && sudo stat -c "%u:%g" "$1"
+    return $?
+}
+
 function copy_file() {
     # Remove the tailing slash
     local from_file="${1%%/}"
@@ -159,13 +164,11 @@ function copy_file() {
     sudo test ! -d "$to_file" && sudo test ! -d "$to_dir" &&
         echo "To File path '$to_dir' does not exist" && return 4
 
-    if [[ -r "$from_file" ]] && [[ -w "$to_file" ]]; then
-        # Permission is granted to the current user
-        cp -r "$from_file" "$to_file"
-    else
-        # Use privilege permission
-        sudo cp -r "$from_file" "$to_file"
-    fi
+    local to_dir_owner=$(get_user_group_id "$to_file")
+    [[ "$to_dir_owner" == "" ]] && to_dir_owner=$(get_user_group_id "$to_dir")
+    [[ "$to_dir_owner" == "" ]] && echo "Cannot stat the ownership of '$to_file'" && return 4
+
+    sudo rsync -a -o -g --chown=$to_dir_owner "$from_file" "$to_file"
 }
 
 function check_all_paths() {
@@ -348,8 +351,6 @@ function pull_file_from_image() {
 
     mount_image "$image_path" "readonly"
     copy_file "$(concatenate_path "$ROOTFS_DIR" "$to_file_path")" "$file_path"
-    # Change owner and group of copied files
-    sudo test -r "$file_path" && sudo chown -R $(whoami):$(whoami) "$file_path"
     unmount_image "$image_path"
     echo -e "${GREEN}Succeed${NC}"
 }
