@@ -13,21 +13,32 @@ NC='\033[0m'
 
 export PATH="${SCRIPT_PATH}/bin":$PATH
 
+all_file_list=''
+cpio_list=''
+e2fs_list=''
+mbr_list=''
+
+function image_list_update() {
+    all_file_list=$(find_image_list)
+    cpio_list=$(get_list "ASCII cpio archive")
+    e2fs_list=$(get_list "Linux .* ext.* filesystem data")
+    mbr_list=$(get_list "MBR boot sector")
+}
+
 function find_image_list() {
     local possible_list=$(find "$IMAGE_DIR" \
         -type d \( \
             -name 'rootfs' -o \
             -name "bootfs" -o \
             -name 'linux*' -o \
-            -name 'linux-*' -o \
-            -name "build" -o \
-            -name "package" -o \
+            -name "build*" -o \
             -name "*.fs" \
         \) \
         -prune -o \
         \( -type l -o -type f \) \( \
             -name "ext[1-5]" -o \
-            -name "IMAGE.dd" -o \
+            -name "*.dd" -o \
+            -name "*.image" -o \
             -name "*.img" \
         \) -exec file -L {} \; 2>/dev/null)
 
@@ -39,11 +50,6 @@ function get_list() {
     [[ "$l_list" ]] && l_list=$(echo "$l_list" | cut -d ":" -f 1)
     echo "$l_list"
 }
-
-all_file_list=$(find_image_list)
-cpio_list=$(get_list "ASCII cpio archive")
-e2fs_list=$(get_list "Linux .* ext.* filesystem data")
-mbr_list=$(get_list "MBR boot sector")
 
 # Input: File name or full path
 # Output: The image file path found in the list
@@ -85,13 +91,6 @@ function image_list() {
     pretty_print_list "$mbr_list"
 
     echo "" # Empty line
-}
-
-function image_list_update() {
-    all_file_list=$(find_image_list)
-    cpio_list=$(get_list "ASCII cpio archive")
-    e2fs_list=$(get_list "Linux .* ext.* filesystem data")
-    mbr_list=$(get_list "MBR boot sector")
 }
 
 # Output: "": not found. Others: Types of image
@@ -444,6 +443,8 @@ function print_help() {
 
 
 [[ ${#*} == 0 ]] && print_help
+
+image_list_update
 
 case "$1" in
 "-h" | "--help")
