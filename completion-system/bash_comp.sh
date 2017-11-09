@@ -19,8 +19,9 @@ function _complete_runQEMU() {
     fi
     local options="-h --help -g -gg -net -smp -m -snapshot -enable-kvm --drive -mem-path -trace"
     if [[ $axiom_update_flag == 0 ]]; then
-        axiom_update_flag=1
-        axiom_image_list=$(_get_image_list)
+        #axiom_update_flag=1
+        # Get only the name of directories and filter out directory with name '.' with grep
+        axiom_image_list=$(_get_image_list | xargs dirname | grep -v -e '^\.$')
     fi
 
     case "$prev_arg" in
@@ -97,7 +98,7 @@ function _complete_image_manager() {
     local options="-h --help list push pull ls rm mkdir"
 
     if [[ $axiom_update_flag == 0 ]]; then
-        axiom_update_flag=1
+        #axiom_update_flag=1
         axiom_image_list=$(_get_image_list)
     fi
 

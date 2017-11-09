@@ -30,8 +30,9 @@ function _complete_runQEMU() {
         '-trace:Use QEMU trace API with specified events' \
         )
     if [[ $axiom_update_flag == 0 ]]; then
-        axiom_update_flag=1
-        axiom_image_list=$(_get_image_list)
+        #axiom_update_flag=1
+        # Get only the name of directories and filter out directory with name '.' with grep
+        axiom_image_list=$(_get_image_list | xargs dirname | grep -v -e '^\.$')
     fi
 
     case "$prev_arg" in
@@ -55,7 +56,7 @@ function _complete_image_and_path() {
     local cur_arg=$words[${#words[@]}]
 
     if [[ $axiom_update_flag == 0 ]]; then
-        axiom_update_flag=1
+        #axiom_update_flag=1
         axiom_image_list=$(_get_image_list)
     fi
 
