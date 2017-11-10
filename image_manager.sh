@@ -36,7 +36,8 @@ function find_image_list() {
         \) \
         -prune -o \
         \( -type l -o -type f \) \( \
-            -name "ext[1-5]" -o \
+            -name "*.ext[1-5]" -o \
+            -name "*.cpio" -o \
             -name "*.dd" -o \
             -name "*.image" -o \
             -name "*.img" \
