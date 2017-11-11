@@ -57,11 +57,6 @@ function print_help() {
     echo "       -trace <....>       : Use QEMU trace API with specified events"
     echo "                             ex: -trace enable=true,events=/tmp/events-vfio"
     echo ""
-    echo "Image List:"
-    local image_list=( $(cd "${IMAGE_DIR}" && find -type f -name "runQEMU.sh" | xargs dirname) )
-    for img in "${image_list[@]}"; do
-        echo "${img##*./}"
-    done
 }
 
 function open_tap() {
