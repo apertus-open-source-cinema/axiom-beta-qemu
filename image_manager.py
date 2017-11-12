@@ -260,7 +260,7 @@ TYPE - 1: Do <OP> in image
        <OP>  <IMAGE>@/[PART]/<PATH> [OPTIONS...]
 
        where <OP> can be one of the followings:
-       ls, rm, mkdir, file, etc.
+       ls, rm, mkdir, file, vim, nano, cat, etc.
        [OPTIONS...] can be empty or options to <OP>
 
        Example: list all the files in partition 2 with -alh
@@ -296,7 +296,7 @@ def main(argv):
     if len(argv) == 0 or argv[0] == '-h' or argv[0] == '--help':
         print_help()
         exit(0)
-    single_arg_cmds = ['ls', 'rm', 'mkdir', 'file']
+    single_arg_cmds = ['ls', 'rm', 'mkdir', 'file', 'vim', 'nano', 'cat']
     auto_color_cmds = ['ls']
 
     # Remove one element from argument list
