@@ -2,7 +2,7 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
-VIRT_ROOT_DIR="${SCRIPT_DIR}/virt-root"
+source "${SCRIPT_DIR}/settings.sh"
 COLOR_RED='\033[1;31m'
 COLOR_GREEN='\033[1;32m'
 COLOR_YELLOW='\033[1;33m'

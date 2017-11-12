@@ -1,14 +1,13 @@
-if [[ -n "$ZSH_VERSION" ]]; then
-    # assume Zsh
-    AXIOM_HOME="$(readlink -f "$(dirname "$0")")"
-    source "${AXIOM_HOME}/completion-system/zsh_comp.sh"
-elif [[ -n "$BASH_VERSION" ]]; then
-    # assume Bash
-    AXIOM_HOME="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
-    source "${AXIOM_HOME}/completion-system/bash_comp.sh"
+if [[ -n "$ZSH_VERSION" ]]; then # assume Zsh
+    SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
+    source "${SCRIPT_DIR}/settings.sh"
+    source "${SCRIPT_DIR}/completion-system/zsh_comp.sh"
+elif [[ -n "$BASH_VERSION" ]]; then # assume Bash
+    SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+    source "${SCRIPT_DIR}/settings.sh"
+    source "${SCRIPT_DIR}/completion-system/bash_comp.sh"
 fi
-VIRT_ROOT_DIR="${AXIOM_HOME}/virt-root"
-export RUN_QEMU_SCRIPT_PATH="${AXIOM_HOME}"
+
 export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
 export PATH=$PATH:"${AXIOM_HOME}/external/gcc-linaro-4.9-gnueabi/bin"
 echo "Installed shell function - axiom. The completion of all scripts and axiom command are now available."
@@ -30,4 +29,3 @@ function axiom() {
             ;;
     esac
 }
-

@@ -2,7 +2,7 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 SCRIPT_PATH="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
-IMAGE_DIR="${SCRIPT_PATH}/guest-images"
+source "${SCRIPT_DIR}/settings.sh"
 
 #Use PATH to automatically solve the binary path problem, export vars to child processes
 export PATH=$(pwd)/aarch64-softmmu/:"${SCRIPT_PATH}/qemu-xilinx/build/aarch64-softmmu/":$PATH
