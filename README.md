@@ -8,6 +8,9 @@ Note: This is a proposal version, which means it's still in alpha phase and migh
 # Execute anywhere
 All the scripts are designed to be run at any directory. Feel free and safe to run all the scripts in any folder.
 
+# Prerequisite
+`pip install logzero sh`
+
 # Instructions
 1. `sudo ./install.sh`
 2. `./prepare_all.sh`
