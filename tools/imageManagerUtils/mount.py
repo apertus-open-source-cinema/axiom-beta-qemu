@@ -24,14 +24,16 @@ def automount(image, mount_point, user=False):
         for idx, part in enumerate(image['partitionTable']):
             source_file = os.path.join(LOOP_DIR, str(idx + 1))
             target_folder = os.path.join(mount_point, 'p' + str(idx + 1))
+            try_unmount(target_folder, user)
             if user:
                 sh.mkdir('-p', target_folder)
-                # TODO mount FAT with fuse
+                # TODO mount FAT/BTRFS/etc. with fuse
                 sh.ext4fuse(source_file, target_folder, _ok_code=range(255))
             else:
-                options = get_mount_options(image, idx + 1)
                 sh.sudo.mkdir('-p', target_folder, _fg=True)
-                sh.sudo.mount(image['path'], target_folder, options=options, _fg=True)
+                options = get_mount_options(image, idx + 1, noerror=True)
+                if options:
+                    sh.sudo.mount(image['path'], target_folder, options=options, _fg=True)
     elif image['type'] == 'CPIO':
         safely_clean_dir(mount_point, user)
         if user:
@@ -109,13 +111,15 @@ def safely_clean_dir(mount_point, user=False):
     return 0
 
 
-def get_mount_options(image, partition=1):
+def get_mount_options(image, partition=1, noerror=False):
     img = image.get('partitionTable')
     if img is None: return None
     logger.debug(img)
 
     part = img['partitions'][partition - 1]
     if part['mountable'] == False:
+        if noerror:
+            return None
         logger.error('Target partition is not mountable')
         print(part)
         exit(1)
