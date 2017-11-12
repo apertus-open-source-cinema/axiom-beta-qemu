@@ -47,6 +47,7 @@ function timed_user_unmount_mbr() {
 function user_extract_cpio() {
     local file_path="$(readlink -f "$1")"
     [[ ! -r "$file_path" ]] && exit 4
+    rm -rf "$axiom_cpio_rootfs_dir"
     mkdir -p "$axiom_cpio_rootfs_dir"
     (
         # Run as detached process so that no working directory change to the user
