@@ -38,7 +38,7 @@ def parse_image_type(image):
         return 'CPIO'
     elif 'MBR boot sector' in image_format:
         return 'MBR'
-    elif re.match(r'.*Linux .* ext[0-9] filesystem.*', image_format):
+    elif re.match(r'.*Linux .* ext[0-9] filesystem.*', str(image_format)):
         return 'E2FS'
     return ''
 
