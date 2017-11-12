@@ -13,6 +13,8 @@ IMAGE_DIR = os.environ.get('IMAGE_DIR')
 
 def locate_image_path(image):
     tmp = image
+    if os.path.isfile(image):
+        tmp = os.path.abspath(image)
     if not os.path.isfile(tmp):
         tmp = os.path.join(IMAGE_DIR, tmp)
     if not os.path.isfile(tmp):
