@@ -131,11 +131,13 @@ class AutoMount():
             safely_clean_dir(self.mount_point)
             os.system('cd {} && sudo cpio -idu --quiet < "{}"'.format(self.mount_point,
                                                                       self.image_file))
-        else:
+        elif self.image_type == 'MBR':
             # Try to get options, return None if it does not require any options
             options = get_mount_options(self.image, self.image.get('targetPartition'))
             sh.sudo.mount(
                 source=self.image_file, target=self.mount_point, options=options, _fg=True)
+        else:
+            sh.sudo.mount(source=self.image_file, target=self.mount_point, _fg=True)
 
     def __enter__(self):
         return self
