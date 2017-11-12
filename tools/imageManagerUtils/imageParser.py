@@ -2,9 +2,9 @@
 
 import os
 import sys
-import sh
 import re
 
+import sh
 import logzero
 from logzero import logger
 

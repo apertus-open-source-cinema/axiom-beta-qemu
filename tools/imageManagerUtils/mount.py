@@ -2,8 +2,9 @@
 
 import os
 import sys
-import sh
+import subprocess
 
+import sh
 import logzero
 from logzero import logger
 
@@ -13,9 +14,13 @@ ROOTFS_DIR = os.path.join(IMAGE_DIR, '.rootfs')
 LOOP_DIR = os.path.join(IMAGE_DIR, '.loops')
 
 
-def automount(image, mount_point, user=False):
+def automount(image, mount_point, user=False, withFork=False):
     path_exist_or_exit(mount_point)
     try_unmount(mount_point, user)
+    if withFork:
+        pid = os.fork()
+        # parent process, return and keep running
+        if pid > 0: return
     if image['type'] == 'MBR':
         sh.mkdir('-p', LOOP_DIR)
         if user:
@@ -199,10 +204,10 @@ class AutoMount():
         elif self.image_type == 'MBR':
             # Try to get options, return None if it does not require any options
             options = get_mount_options(self.image, self.image.get('targetPartition'))
-            sh.sudo.mount(
-                source=self.image_file, target=self.mount_point, options=options, _fg=True)
+            # Try to umount and ignore any errors
+            sh.sudo.mount(self.image_file, self.mount_point, options=options, _fg=True)
         else:
-            sh.sudo.mount(source=self.image_file, target=self.mount_point, _fg=True)
+            sh.sudo.mount(self.image_file, self.mount_point, _fg=True)
 
     def __enter__(self):
         return self
@@ -215,5 +220,5 @@ class AutoMount():
             safely_clean_dir(self.mount_point)
         else:
             # Try to umount and ignore any errors
-            sh.sudo.umount(self.mount_point, '-R', '-l', _ok_code=range(255), _fg=True)
+            subprocess.Popen('sudo umount -R -l {}'.format(self.mount_point).split())
         logger.debug('Clean/Unmount {}'.format(self.mount_point))

@@ -234,7 +234,10 @@ def do_mount(argv, user=False):
     if not user:
         inform_user_sudo('Need sudo to unfold/mount')
     image = parse_image(argv[0])
-    mount.automount(image, argv[1], user)
+    withFork = False
+    if len(argv) > 2 and argv[2] == '-F':
+        withFork = True
+    mount.automount(image, argv[1], user, withFork)
 
 
 def do_umount(argv, user=False):
