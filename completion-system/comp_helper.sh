@@ -5,11 +5,7 @@ axiom_loops_rootfs_dir="$(readlink -f "${AXIOM_HOME}/.rootfs_loops")"
 axiom_comp_rootfs=""
 
 function _get_image_list() {
-    local res=$($RUN_QEMU_SCRIPT_PATH/image_manager.sh list | sed 1,1d | awk '{print $1}')
-    res=($res) # Convert to array
-    for f in "${res[@]}"; do
-        echo "${f}"
-    done
+    $RUN_QEMU_SCRIPT_PATH/image_manager.py query list
 }
 
 # Timeout in 5s. This value cannot be too long in order to ensure the mounted dir is latest completion.
@@ -90,15 +86,8 @@ function get_mbr_partitions() {
 }
 
 function user_mount_image() {
-    local tmp=($($RUN_QEMU_SCRIPT_PATH/image_manager.sh query image_path_and_type "$1"))
-    if [[ -n "$ZSH_VERSION" ]]; then # assume Zsh
-        local image_path="${tmp[1]}"
-        local image_type="${tmp[2]}"
-    elif [[ -n "$BASH_VERSION" ]]; then # assume Bash
-        local image_path="${tmp[0]}"
-        local image_type="${tmp[1]}"
-    fi
-    local duration=$3
+    local image_path="$($RUN_QEMU_SCRIPT_PATH/image_manager.py query pathof "$1")"
+    local image_type="$($RUN_QEMU_SCRIPT_PATH/image_manager.py query typeof "$1")"
 
     # Reset the return path to target rootfs for completion
     axiom_comp_rootfs=""
@@ -110,7 +99,7 @@ function user_mount_image() {
         (timed_user_remove_cpio 5s "$axiom_cpio_rootfs_dir" &)
         user_extract_cpio "$image_path"
         ;;
-    "EXT2" | "EXT3" | "EXT4")
+    "EXT2" | "EXT3" | "EXT4" | "E2FS")
         axiom_comp_rootfs="$axiom_e2fs_rootfs_dir"
         mkdir -p "$axiom_e2fs_rootfs_dir"
         if _check_command ext4fuse || _check_command fusermount; then

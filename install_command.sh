@@ -26,7 +26,7 @@ function axiom() {
             $RUN_QEMU_SCRIPT_PATH/runQEMU.sh $@
             ;;
         image)
-            $RUN_QEMU_SCRIPT_PATH/image_manager.sh $@
+            $RUN_QEMU_SCRIPT_PATH/image_manager.py $@
             ;;
     esac
 }
