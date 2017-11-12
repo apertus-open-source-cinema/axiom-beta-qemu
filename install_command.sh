@@ -1,11 +1,11 @@
 if [[ -n "$ZSH_VERSION" ]]; then # assume Zsh
     SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
     source "${SCRIPT_DIR}/settings.sh"
-    source "${SCRIPT_DIR}/completion-system/zsh_comp.sh"
+    source "${SCRIPT_DIR}/tools/completion-system/zsh_comp.sh"
 elif [[ -n "$BASH_VERSION" ]]; then # assume Bash
     SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
     source "${SCRIPT_DIR}/settings.sh"
-    source "${SCRIPT_DIR}/completion-system/bash_comp.sh"
+    source "${SCRIPT_DIR}/tools/completion-system/bash_comp.sh"
 fi
 
 export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH

@@ -4,7 +4,8 @@
 axiom_image_list=""
 axiom_update_flag=0
 
-source "$AXIOM_HOME/completion-system/comp_helper.sh"
+SCRIPT_DIR="$(readlink -f "$(dirname "$0")")"
+source "${SCRIPT_DIR}/comp_helper.sh"
 
 function _complete_runQEMU() {
     local prev_arg=$words[${CURRENT}-1]
