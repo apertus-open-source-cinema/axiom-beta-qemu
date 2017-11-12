@@ -265,9 +265,22 @@ TYPE - 1: Do <OP> in image
 
        Example: list all the files in partition 2 with -alh
        {} ls test/image.img@/p2/ -alh
+
 TYPE - 2:
        push  <PATH> <IMAGE>@/<PATH>  : Push a file/folder into image
        pull  <IMAGE>@/<PATH> <PATH>  : Pull a file/folder from image
+
+TYPE - 3:
+       query <TYPE> <IMAGE>
+
+       where <TYPE> can be:
+           list, typeof, sizeof, pathof, partitionTableof
+
+TYPE - 4:
+       mount <IMAGE> <MOUNT POINT ROOT> [-F]
+       umount <IMAGE> <MOUNT POINT ROOT>
+
+       Option "-F" means fork. Execute commands in a non-blocking fashion.
 
 '''.format(sys.argv[0], sys.argv[0]))
 
