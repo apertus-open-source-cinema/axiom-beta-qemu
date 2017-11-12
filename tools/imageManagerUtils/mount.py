@@ -10,6 +10,61 @@ from logzero import logger
 IMAGE_DIR = os.environ.get('IMAGE_DIR')
 # The name of ROOTFS_DIR must be .rootfs for safety.
 ROOTFS_DIR = os.path.join(IMAGE_DIR, '.rootfs')
+LOOP_DIR = os.path.join(IMAGE_DIR, '.loops')
+
+
+def automount(image, mount_point, user=False):
+    path_exist_or_exit(mount_point)
+    try_unmount(mount_point, user)
+    if image['type'] == 'MBR':
+        sh.mkdir('-p', LOOP_DIR)
+        if user:
+            try_unmount(LOOP_DIR, user)
+            sh.mbrfs(image['path'], LOOP_DIR)
+        for idx, part in enumerate(image['partitionTable']):
+            source_file = os.path.join(LOOP_DIR, str(idx + 1))
+            target_folder = os.path.join(mount_point, 'p' + str(idx + 1))
+            if user:
+                sh.mkdir('-p', target_folder)
+                # TODO mount FAT with fuse
+                sh.ext4fuse(source_file, target_folder, _ok_code=range(255))
+            else:
+                options = get_mount_options(image, idx + 1)
+                sh.sudo.mkdir('-p', target_folder, _fg=True)
+                sh.sudo.mount(image['path'], target_folder, options=options, _fg=True)
+    elif image['type'] == 'CPIO':
+        safely_clean_dir(mount_point, user)
+        if user:
+            os.system('cd {} && cpio -idu --quiet < "{}"'.format(mount_point, image['path']))
+        else:
+            os.system('cd {} && sudo cpio -idu --quiet < "{}"'.format(mount_point, image['path']))
+    else:
+        try_unmount(mount_point, user)
+        if user:
+            sh.ext4fuse(image['path'], mount_point, _fg=True)
+        else:
+            sh.sudo.mount(source=image['path'], target=mount_point, _fg=True)
+
+
+def autounmount(image, mount_point, user=False):
+    path_exist_or_exit(mount_point)
+    if image['type'] == 'MBR':
+        try_unmount(mount_point, user)
+        try_unmount(LOOP_DIR, user=True)
+        for idx, part in enumerate(image['partitionTable']):
+            target_folder = os.path.join(mount_point, 'p' + str(idx + 1))
+            try_unmount(target_folder, user)
+            if user and os.path.exists(target_folder):
+                sh.rmdir(target_folder, _fg=True, _ok_code=range(255))
+            if not user and os.path.exists(target_folder):
+                sh.sudo.rmdir(target_folder, _fg=True, _ok_code=range(255))
+    elif image['type'] == 'CPIO':
+        if not user:
+            os.system('cd {} && sudo find . | sudo cpio -H newc --quiet -o > "{}"'.format(
+                mount_point, image['path']))
+        safely_clean_dir(mount_point, user)
+    else:
+        try_unmount(mount_point, user)
 
 
 def file_exist_or_exit(path):
@@ -24,16 +79,19 @@ def path_exist_or_exit(path):
         exit(1)
 
 
-def try_unmount(mount_point):
+def try_unmount(mount_point, user=False):
     sh.sync()
     try:
         sh.mountpoint(mount_point, '-q')
-        sh.sudo.umount(mount_point, '-R', '-l', _fg=True)
+        if user:
+            sh.fusermount('-quz', mount_point, _fg=True)
+        else:
+            sh.sudo.umount(mount_point, '-R', '-l', _fg=True)
     except sh.ErrorReturnCode:
         pass
 
 
-def safely_clean_dir(mount_point):
+def safely_clean_dir(mount_point, user=False):
     if not os.path.exists(mount_point):
         sh.mkdir('-p', mount_point)
         return 0
@@ -43,7 +101,10 @@ def safely_clean_dir(mount_point):
         exit(1)
     except sh.ErrorReturnCode:
         pass
-    sh.sudo.rm('-rf', mount_point, _fg=True)
+    if user:
+        sh.rm('-rf', mount_point, _fg=True)
+    else:
+        sh.sudo.rm('-rf', mount_point, _fg=True)
     sh.mkdir('-p', mount_point)
     return 0
 

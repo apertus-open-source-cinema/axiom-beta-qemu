@@ -58,9 +58,10 @@ def parse_image(image_with_dir):
     image['targetPath'] = image['targetPath'][1:]
     image['type'] = imageParser.parse_image_type(image['path'])
     if image['type'] == 'MBR':
-        image['targetPartition'] = int(image['targetPath'].split('/')[0][1:])
-        # Set with default '/'
-        image['targetPath'] = '/'.join(image['targetPath'].split('/')[1:])
+        if len(image['targetPath'].split('/')) >= 2:
+            image['targetPartition'] = int(image['targetPath'].split('/')[0][1:])
+            # Set with default '/'
+            image['targetPath'] = '/'.join(image['targetPath'].split('/')[1:])
         # Set up partition table
         image['partitionTable'] = imageParser.parse_partition_table(image['path'])
     return image
@@ -229,6 +230,20 @@ def do_query(argv, subcommand):
         exit(1)
 
 
+def do_mount(argv, user=False):
+    if not user:
+        inform_user_sudo('Need sudo to unfold/mount')
+    image = parse_image(argv[0])
+    mount.automount(image, argv[1], user)
+
+
+def do_umount(argv, user=False):
+    if not user:
+        inform_user_sudo('Need sudo to unfold/mount')
+    image = parse_image(argv[0])
+    mount.autounmount(image, argv[1], user)
+
+
 def print_help():
     print('''
 Usage:
@@ -289,6 +304,14 @@ def main(argv):
     elif command == 'query':
         subcommand = argv.pop(0)
         do_query(argv, subcommand)
+    elif command == 'mount':
+        do_mount(argv)
+    elif command == 'umount':
+        do_umount(argv)
+    elif command == 'userMount':
+        do_mount(argv, user=True)
+    elif command == 'userUmount':
+        do_umount(argv, user=True)
     else:
         logger.error('Command not supported: ' + str(command))
         exit(1)
