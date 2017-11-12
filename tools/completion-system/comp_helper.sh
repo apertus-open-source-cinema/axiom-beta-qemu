@@ -4,8 +4,12 @@ axiom_mbr_rootfs_dir="$(readlink -f "${AXIOM_HOME}/.rootfs_mbr")"
 axiom_loops_rootfs_dir="$(readlink -f "${AXIOM_HOME}/.rootfs_loops")"
 axiom_comp_rootfs=""
 
+function image_manager() {
+    "$AXIOM_HOME/image_manager.py" "$@"
+}
+
 function _get_image_list() {
-    $RUN_QEMU_SCRIPT_PATH/image_manager.py query list
+    image_manager query list
 }
 
 # Timeout in 5s. This value cannot be too long in order to ensure the mounted dir is latest completion.
@@ -19,7 +23,7 @@ function timed_user_remove_cpio() {
 }
 
 function safe_user_umount() {
-    mountpoint -q "$1" && fusermount -qu "$1" 2> /dev/null
+    mountpoint -q "$1" && fusermount -quz "$1" 2> /dev/null
 }
 
 function timed_user_unmount_e2fs() {
@@ -65,29 +69,21 @@ function _check_command() {
 }
 
 function get_mbr_partitions() {
+    local IFS=$'\n' # Change IFS to '\n' locally
     local image_path="$1"
-    if [[ -n "$ZSH_VERSION" ]]; then # assume Zsh
-        local partitions=("${(@f)$(fdisk -l "$image_path" | grep -v -e "Disk.*sectors" | grep "$1")}")
-    elif [[ -n "$BASH_VERSION" ]]; then # assume Bash
-        local partitions=( $(fdisk -l "$image_path" | grep -v -e "Disk.*sectors" | grep "$1") )
-    fi
-    local index=1
+    local partitions=($(image_manager query partitionTableof "$image_path"))
 
     for p in "${partitions[@]}"; do
-        local type_dont_count_flag="$(echo "$p" | grep -e "5 *Extended")"
-        local type_skip_flag="$(echo "$p" | grep -e "82 *Linux swap")"
         # Skip un-mountable partitions
-        [[ "$type_dont_count_flag" != "" ]] && continue
-        if [[ "$type_skip_flag" == "" ]]; then
-            echo "$index"
-            index=$(( $index + 1 ))
-        fi
+        [[ "$p" == *"False" ]] && continue
+        local index=$(echo "$p" | awk '{print $1}')
+        echo $index
     done
 }
 
 function user_mount_image() {
-    local image_path="$($RUN_QEMU_SCRIPT_PATH/image_manager.py query pathof "$1")"
-    local image_type="$($RUN_QEMU_SCRIPT_PATH/image_manager.py query typeof "$1")"
+    local image_path="$(image_manager query pathof "$1")"
+    local image_type="$(image_manager query typeof "$1")"
 
     # Reset the return path to target rootfs for completion
     axiom_comp_rootfs=""
@@ -137,6 +133,7 @@ function user_mount_image() {
         local partitions=($(get_mbr_partitions "$image_path"))
         # Mount loop devices
         mbrfs "$image_path" "$axiom_loops_rootfs_dir" 2> /dev/null
+        local IFS='\n'
         # Mount partitions
         for p in "${partitions[@]}"; do
             local loop_dev="${axiom_loops_rootfs_dir}/${p}"

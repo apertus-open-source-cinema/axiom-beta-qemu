@@ -219,10 +219,11 @@ def do_query(argv, subcommand):
     elif subcommand == 'partitionTableof':
         path = imageParser.locate_image_path(path)
         img = imageParser.parse_partition_table(path)
-        for part in img['partitions']:
-            # start, end, size, offset, sizelimit, mountable
-            print('{} {} {} {} {} {}'.format(part['start'], part['end'], part['size'],
-                                             part['offset'], part['sizelimit'], part['mountable']))
+        for idx, part in enumerate(img['partitions']):
+            # index, start, end, size, offset, sizelimit, mountable
+            print('{} {} {} {} {} {} {}'.format(idx + 1, part['start'], part['end'], part['size'],
+                                                part['offset'], part['sizelimit'],
+                                                part['mountable']))
     else:
         logger.error('Query command not supported: ' + str(subcommand))
         exit(1)
