@@ -25,6 +25,8 @@ function install_debian_packages() {
         pkg-config
         autopoint
         rsync
+        qemu-user-static
+        binfmt-support
     )
     local QEMU_DEPS=(
         # Required packages
@@ -109,6 +111,10 @@ function install_arch_packages() {
     local EXTRA_DEPS=(
         qemu
     )
+    local AUR_DEPS=(
+        qemu-user-static
+        binfmt-support
+    )
     # ArchLinux is a rolling release distribution, thus updating database is required.
     pacman -Syy
 
@@ -125,6 +131,15 @@ function install_arch_packages() {
     [[ $? != 0 ]] && print_message_and_exit "Install QEMU_DEPS"
     pacman --noconfirm -S ${EXTRA_DEPS[@]}
     [[ $? != 0 ]] && print_message_and_exit "Install EXTRA_DEPS"
+
+    local flag_ok=1
+    for pkg in "${AUR_DEPS[@]}"; do
+        ! $(pacman -Qs $pkg 2>&1 > /dev/null) && flag_ok=0
+    done
+    if [[ $flag_ok == 0 ]]; then
+        echo -e "\nPlease install the following AUR packages by hand!!\n"
+        echo -e "    ${AUR_DEPS[@]}\n\n"
+    fi
 }
 
 function install_centos_packages() {
@@ -147,6 +162,8 @@ function install_centos_packages() {
         libfuse-devel
         pkg-config
         rsync
+        qemu-user-static
+        binfmt-support
     )
     local QEMU_DEPS=(
         # Required packages
