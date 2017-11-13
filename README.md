@@ -15,8 +15,9 @@ All the scripts are designed to be run at any directory. Feel free and safe to r
 1. `sudo ./install.sh`
 2. `./prepare_all.sh`
 3. `./download.sh`
-4. `./guest-images/dev/microzed-image-1.3/build.sh`
-5. `./run_image.sh dev/microzed-image-1.3`
+4. (Optional to latest OS) `source ./install_command.sh`
+4. `./guest-images/dev/microzed-image-1.3/build.sh` or `./guest-images/dev/beta-software/build.sh`
+5. `./run_image.sh dev/microzed-image-1.3` or `./run_image.sh dev/beta-software`
 
 NOTE: If you fail on command not found or any problem, try `source ./install_command.sh` and then do it again. This will force system using the binaries comes with this repo.
 
@@ -38,6 +39,8 @@ pull   -- Pull a file/folder from image
 ls     -- List files in image folder
 rm     -- Remove file/folder from image
 mkdir  -- Make a folder in image
+...
+...
 --help  -h  -- Display help message and information of usage.
 ```
 
