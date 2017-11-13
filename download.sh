@@ -28,7 +28,7 @@ function unfold_file() {
     local NC='\033[0m'
 
     cd $dir_name
-    echo -e "${COLOR_GREEN}decompress file $file_path${NC}"
+    echo -e "${COLOR_GREEN}decompress file $1${NC}"
     case "$file_name" in
         *.tar.gz|*.tgz) tar zxf "$file_name" ;;
         *.tar.bz2|*.tbz|*.tbz2) tar xjf "$file_name" ;;
@@ -45,7 +45,6 @@ function unfold_file() {
         *.7z) 7za x "$file_name" ;;
         * ) echo -e "${COLOR_BLUE}fail to decompress file $file_path${NC}" ;;
     esac
-    cd -
 }
 
 function main() {
