@@ -18,17 +18,17 @@ function _complete_runQEMU() {
         num_args=$(( $num_args - 1 )) # Shift one argument
         curr_arg_num=$(( $curr_arg_num - 1 ))
     fi
-    local options=('-h:Display help message and information of usage.' \
-        '--help:Display help message and information of usage.' \
-        '-g:Use gdb to run QEMU for debugging' \
-        '-gg:Run QEMU with remote gdb mode to debug guest program' \
-        '-smp:Number of cores (default: 1)' \
-        '-m:Size of memory (MB) (default: 1024)' \
-        '-snapshot:Run with read only guest image' \
-        '-enable-kvm:Enable KVM' \
-        '--drive:Hook another disk image to guest' \
-        '-mem-path:Use file to allocate guest memory (ex: -mem-path /dev/hugepages)' \
-        '-trace:Use QEMU trace API with specified events' \
+    local options=('-h:Display help message and information of usage.'
+        '--help:Display help message and information of usage.'
+        '-g:Use gdb to run QEMU for debugging'
+        '-gg:Run QEMU with remote gdb mode to debug guest program'
+        '-smp:Number of cores (default: 1)'
+        '-m:Size of memory (MB) (default: 1024)'
+        '-snapshot:Run with read only guest image'
+        '-enable-kvm:Enable KVM'
+        '--drive:Hook another disk image to guest'
+        '-mem-path:Use file to allocate guest memory (ex: -mem-path /dev/hugepages)'
+        '-trace:Use QEMU trace API with specified events'
         )
     if [[ $axiom_update_flag == 0 ]]; then
         #axiom_update_flag=1
@@ -89,15 +89,19 @@ function _complete_image_manager() {
         curr_arg_num=$(( $curr_arg_num - 1 ))
     fi
     local operation=${s_words[2]}
-    local options=('-h:Display help message and information of usage.' \
-        '--help:Display help message and information of usage.' \
+    local options=('-h:Display help message and information of usage.'
+        '--help:Display help message and information of usage.'
         )
-    local actions=('list:List all existing images' \
-        'push:Push a file/folder into image' \
-        'pull:Pull a file/folder from image' \
-        'ls:List files in image folder' \
-        'rm:Remove file/folder from image' \
-        'mkdir:Make a folder in image' \
+    local actions=('list:List all existing images'
+        'push:Push a file/folder into image'
+        'pull:Pull a file/folder from image'
+        'ls:List files in image folder'
+        'rm:Remove file/folder from image'
+        'mkdir:Make a folder in image'
+        'file:Check file info'
+        'vim:Edit the file with vim'
+        'nano:Edit the file with nano'
+        'cat:Print out the content of the file'
         )
 
     case "$operation" in
@@ -109,7 +113,7 @@ function _complete_image_manager() {
             [[ $curr_arg_num == 3 ]] &&  _complete_image_and_path
             [[ $curr_arg_num == 4 ]] &&  _alternative 'files:filenames:_files'
             ;;
-        "ls" | "rm" | "mkdir")
+        "ls" | "rm" | "mkdir" | "file" | "vim" | "nano" | "cat")
             [[ $curr_arg_num == 3 ]] &&  _complete_image_and_path
             ;;
         *)
