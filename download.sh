@@ -7,11 +7,14 @@ IMAGE_DIR="$SCRIPT_PATH/guest-images"
 # Format: [OUTPUT PATH]/<RENAMED COMPRESSED FILE NAME>
 # Where the OUTPUT PATH is optional since the compressed file might already contain
 # the directory hierarchy we need, i.e., release version.
-files=('dev/testimage-v1.3.tar.gz')
+files=('dev/testimage-v1.3.tar.gz'
+       'dev/beta-software')
 
-links=('https://github.com/MedicineYeh/microzed-image/archive/v1.3.tar.gz')
+links=('https://github.com/MedicineYeh/microzed-image/archive/v1.3.tar.gz'
+       'git+https://github.com/MedicineYeh/beta-software-wrapper')
 
-sha256sums=('6439c480e97ea1763ec62bfc6611db275f3a995743a391954b47cb5727670fe1')
+sha256sums=('6439c480e97ea1763ec62bfc6611db275f3a995743a391954b47cb5727670fe1'
+            '')
 
 function check_sha256() {
     local sum=$(sha256sum -b "$1" | cut -d " " -f1)
@@ -56,12 +59,19 @@ function main() {
     cd "$IMAGE_DIR"
     for file_name in "${files[@]}"; do
         local dir_name=$(dirname "$file_name")
+        local link="${links[${index}]}"
         mkdir -p $dir_name # Create directory
-        [[ ! -f "${file_name}" ]] && wget "${links[${index}]}" -O "$file_name"
-        if $(check_sha256 $file_name ${sha256sums[${index}]}); then
-            (unfold_file $file_name) # Use () in case the dir being wrong
+
+        if [[ "$link" == "git+"* ]]; then
+            link="${link##git+}"  # Remove git+ word
+            [[ ! -d "$file_name" ]] && git clone --depth 10 "$link" "$file_name"
         else
-            echo -e "${COLOR_RED}Fatal: The file '$file_name' sha256sum does not match!!${NC}"
+            [[ ! -f "${file_name}" ]] && wget "$link" -O "$file_name"
+            if $(check_sha256 $file_name ${sha256sums[${index}]}); then
+                (unfold_file $file_name) # Use () in case the dir being wrong
+            else
+                echo -e "${COLOR_RED}Fatal: The file '$file_name' sha256sum does not match!!${NC}"
+            fi
         fi
         index+=1
     done
