@@ -110,6 +110,8 @@ def find_image_list():
     img_list = sh.find(*opt_b, '-prune', '-o', *opt_w, *exec_opt, _tty_out=False)
     # Remove empty string and strip the first two characters "./"
     img_list = [remove_control_chars(file_name)[2:] for file_name in img_list if file_name]
+    # Filter out images with broken symbolic link
+    img_list = [text for text in img_list if 'cannot open' not in text]
     # Cut the string into two folds. [NAME: TYPE]
     img_list = [[text.split(':')[0], ''.join(text.split(':')[1:])] for text in img_list]
     # Transform into dictionary and parse type string
