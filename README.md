@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/MedicineYeh/axiom-beta-env.svg?branch=master)](https://travis-ci.org/MedicineYeh/axiom-beta-env)
-
 # axiom-beta-env
 An apertus° AXIOM-beta execution environment for both developer/user.
 
