@@ -1,66 +1,58 @@
-These scripts are currently tailored for being run on Ubuntu/Debian based systems as they acquire dependencies through apt-get.
+# axiom-beta-env
+An apertus° AXIOM-beta execution environment for both developer/user.
 
+This repo contains the build environments for all AXIOM-beta scripts and images.
 
-# axiom-beta-qemu
-QEMU emulation of the AXIOM Beta hardware / software
+# Prerequisite
+The __image_manager.py__ python scripts requires Python3 and two site packages. Please install them with the following command.
+`pip3 install logzero sh`
 
-These scripts will help you to run the AXIOM Beta OS on QEMU.
+# Instructions
 
-To get started, make sure you have a good internet connection
-and at least (!) 25 GB of free space, then clone the repository
-and follow the steps below.
+To prepare the build/execution environment, follow the steps:
+1. `sudo ./install.sh`
+2. `./prepare_all.sh`
+3. `./download.sh`
 
-    git clone https://github.com/apertus-open-source-cinema/axiom-beta-qemu
-    cd axiom-beta-qemu
+After the above steps, install the `axiom` command and activate its build/execution environment by running:
+`source ./install_command.sh`
 
-## Step 1: Build and Install QEMU
-You will need to install QEMU from the Xilinx repository;
-run this script at the command prompt:
+Now, you can start to build either the (untested) image or the official build pipeline of beta-software and execute them with:
+4. `./guest-images/dev/microzed-image-1.3/build.sh` or `./guest-images/dev/beta-software/build.sh`
+5. `./run_image.sh dev/microzed-image-1.3` or `./run_image.sh dev/beta-software`
 
-    ./build_qemu.sh
+NOTE: If you fail on command not found or any problem, try `source ./install_command.sh` and then do it again. This will force system using the binaries comes with this repo.
 
-See http://www.wiki.xilinx.com/QEMU for additional info.
-After QEMU is built, you will have to provide the system password to install it.
+# AXIOM command (shell function)
+This repo has a complete shell completion systems and execution environments. One can install the `axiom` command and use it to run QEMU instance at any where.
+1. `source ./install_command.sh`
+2. `axiom image list`
+3. `axiom image pull dev/microzed-image-1.3@/p2/etc/`
+4. `axiom qemu dev/microzed-image-1.3`
 
-## Step 2: Build the Linux kernel from Xilinx
+To understand more on the concepts of using this build system, please refer to this [thread](https://github.com/apertus-open-source-cinema/axiom-beta-qemu/issues/6)
 
-Note: You need to install either kernel 4.6.0 (recommended)
-or kernel 4.9.0 (not fully working yet).
+# AXIOM command completion
+Completion system is available for `axiom`, `image_manager.py` and `runQEMU.sh`.
+Run `source ./install_command.sh` for registering the completion functions.
 
-### Step 2A: Build Xilinx Linux kernel 4.6.0
+``` zsh
+$ axiom image <TAB>
+list   -- List all existing images
+push   -- Push a file/folder into image
+pull   -- Pull a file/folder from image
+ls     -- List files in image folder
+rm     -- Remove file/folder from image
+mkdir  -- Make a folder in image
+...
+...
+--help  -h  -- Display help message and information of usage.
+```
 
-To download and build this kernel, run:
-
-    ./build_kernel4.6.0.sh
-
-As we tested, kernel 4.6.0 works properly on QEMU.
-
-### Step 2B: Build Xilinx Linux kernel 4.9.0
-
-This will download the latest (git) version of the Xilinx Linux kernel.
-However, at the moment, this kernel verion will not run on QEMU properly.
-If you are confident you can fix it, run:
-
-    ./build_kernel4.9.0.sh
-
-## Step 3: Download AXIOM Beta image
-To download the AXIOM Beta image, run the following script:
-
-    ./download_axiom_beta_image.sh
-
-Note: This will download around 3.7GB.
-
-## Step 4: Run QEMU
-
-This will start the Axiom BETA firmware in QEMU.
-
-    ./start_qemu.sh
-
-Wait until you get the login prompt and... start hacking.
-
-## Next steps
-
-- wiki page: [AXIOM_Beta_QEMU](https://wiki.apertus.org/index.php/AXIOM_Beta_QEMU)
-- add examples (using GDB, debugging devices etc)
-- create the Beta image from scratch
-- emulate the hardware devices present in the Beta
+## You can also tab all the way through the file system in image
+``` zsh
+$ axiom image push README.md dev/microzed-image-1.3@/etc/<TAB>
+rch-release      fstab             iproute2/         login.defs        modprobe.d/       pacman.d/         resolvconf.conf   systemd/        
+bash.bash_logout  gai.conf          iptables/         logrotate.conf    modules-load.d/   pam.d/            rpc               tmpfiles.d/     
+bash.bashrc       group ..................
+```

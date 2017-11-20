@@ -1,0 +1,20 @@
+[submodule "qemu-xilinx"]
+	path = qemu-xilinx
+	url = git://github.com/Xilinx/qemu.git
+	ignore = dirty
+[submodule "external/mbrfs"]
+	path = external/mbrfs
+	url = https://github.com/snippits/mbrfs
+	ignore = dirty
+[submodule "external/ext4fuse"]
+	path = external/ext4fuse
+	url = https://github.com/gerard/ext4fuse
+	ignore = dirty
+[submodule "external/util-linux"]
+	path = external/util-linux
+	url = https://github.com/karelzak/util-linux
+	ignore = dirty
+[submodule "external/e2fsprogs"]
+	path = external/e2fsprogs
+	url = https://github.com/tytso/e2fsprogs
+	ignore = dirty
