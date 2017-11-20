@@ -63,7 +63,7 @@ def parse_partition_table(file_path):
     for p in partition_infos:
         logger.debug(p)
         n = numbers_in_text(p, [0, 1, 2])
-        if '83 Linux' in p or 'FAT32' in p:
+        if '83 Linux' in p or 'FAT32' in p or 'Linux filesystem' in p or 'EFI System' in p:
             mountable = True
         else:
             mountable = False
