@@ -46,7 +46,11 @@ If you are confident you can fix it, run:
 ## Step 3: Download AXIOM Beta image
 To download the AXIOM Beta image, run the following script:
 
-    ./download_axiom_beta_image.sh
+```
+wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/beta_20170109.dd.xz
+wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/devicetree.dtb
+wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/u-boot
+```
 
 Note: This will download around 3.7GB.
 
