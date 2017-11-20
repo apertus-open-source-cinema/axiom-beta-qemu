@@ -1,0 +1,34 @@
+From 62f5387e91d62e688daf28d9de8643bb7aa7a972 Mon Sep 17 00:00:00 2001
+From: Anthony PERARD <anthony.perard@citrix.com>
+Date: Tue, 10 Oct 2017 11:24:18 +0100
+Subject: [PATCH 1/2] ui/gtk: Fix deprecation of vte_terminal_copy_clipboard
+
+vte_terminal_copy_clipboard() is deprecated in VTE 0.50.
+
+Signed-off-by: Anthony PERARD <anthony.perard@citrix.com>
+Reviewed-by: Daniel P. Berrange <berrange@redhat.com>
+Signed-off-by: Michael Tokarev <mjt@tls.msk.ru>
+---
+ ui/gtk.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/ui/gtk.c b/ui/gtk.c
+index 5bd87c2..342e96f 100644
+--- a/ui/gtk.c
++++ b/ui/gtk.c
+@@ -1702,7 +1702,12 @@ static void gd_menu_copy(GtkMenuItem *item, void *opaque)
+     GtkDisplayState *s = opaque;
+     VirtualConsole *vc = gd_vc_find_current(s);
+ 
++#if VTE_CHECK_VERSION(0, 50, 0)
++    vte_terminal_copy_clipboard_format(VTE_TERMINAL(vc->vte.terminal),
++                                       VTE_FORMAT_TEXT);
++#else
+     vte_terminal_copy_clipboard(VTE_TERMINAL(vc->vte.terminal));
++#endif
+ }
+ 
+ static void gd_vc_adjustment_changed(GtkAdjustment *adjustment, void *opaque)
+-- 
+2.14.2
+
