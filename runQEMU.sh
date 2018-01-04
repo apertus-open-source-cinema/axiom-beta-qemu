@@ -3,20 +3,36 @@
 
 SCRIPT_PATH="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 source "${SCRIPT_DIR}/settings.sh"
+COLOR_RED='\033[1;31m'
+COLOR_GREEN='\033[1;32m'
+COLOR_YELLOW='\033[1;33m'
+NC='\033[0;00m'
 
-#Use PATH to automatically solve the binary path problem, export vars to child processes
+# Use PATH to automatically solve the binary path problem. Export vars to child processes
 export PATH=$(pwd)/aarch64-softmmu/:"${SCRIPT_PATH}/qemu-xilinx/build/aarch64-softmmu/":$PATH
 export QEMU_ARM=qemu-system-aarch64
 export QEMU_X86=qemu-system-x86_64
 QEMU_ARGS=()
 
+# Global arguments to all running instances
 # QEMU_ARGS+=(-drive if=sd,driver=raw,cache=writeback,file=$IMAGE_DIR/data.ext3)
 
 # Debug traces
 #QEMU_ARGS+=(-trace enable=true,events=/tmp/events-vfio)
 #QEMU_ARGS+=(-mem-path /dev/hugepages)
 
-
+#######################################
+# Find the location of run script from given relative/absolute path.
+# This function will also do simple checks on the script, i.e., executable.
+# Globals:
+#   None
+# Arguments:
+#   <Relative/Absolute Path>
+# Returns:
+#   succeed:0 / failed:1
+# Echos:
+# The absolute path of the run script.
+#######################################
 function get_run_script() {
     local image_path="$1"
     # No path specified
@@ -59,6 +75,9 @@ function print_help() {
     echo ""
 }
 
+#######################################
+# Open tap devices for bridge networks.
+#######################################
 function open_tap() {
     if [[ $(sudo -n ip 2>&1|grep "Usage"|wc -l) == 0 ]] \
         || [[ $(sudo -n brctl 2>&1|grep "Usage"|wc -l) == 0 ]]; then
@@ -68,6 +87,9 @@ function open_tap() {
     sudo ip tuntap add tap0 mode tap user $(whoami)
 }
 
+#######################################
+# Generate a random MAC address for the emulated platform.
+#######################################
 function generate_random_mac_addr() {
     if [ ! -f $SCRIPT_PATH/.macaddr ]; then
         printf -v macaddr \
@@ -78,8 +100,8 @@ function generate_random_mac_addr() {
     MAC_ADDR=$(cat $SCRIPT_PATH/.macaddr)
 }
 
+# Parse arguments
 while [[ "$1" != "" ]]; do
-    # Parse arguments
     case "$1" in
         "-net" )
             generate_random_mac_addr
@@ -143,7 +165,7 @@ while [[ "$1" != "" ]]; do
     esac
 done
 
-# No device/image name in options
+# No device/image name is specified in user arguments
 [[ -z "$image_path" ]] && print_help && exit 1
 # Try relative path first
 QEMU=$(get_run_script "$image_path")
@@ -152,8 +174,6 @@ QEMU=$(get_run_script "$image_path")
 [[ -z "$QEMU" ]] && echo "Cannot find script runQEMU.sh in '$image_path'" && exit 1
 
 # Execute QEMU
-COLOR_GREEN='\033[1;32m'
-NC='\033[0;00m'
 echo -e "Running '${COLOR_GREEN}${QEMU} ${QEMU_ARGS[@]}${NC}'"
 $QEMU "${QEMU_ARGS[@]}"
 
