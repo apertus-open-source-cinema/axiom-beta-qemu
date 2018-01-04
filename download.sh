@@ -73,6 +73,7 @@ function main() {
     # Download all links/files
     for file_name in "${files[@]}"; do
         local link="${links[${index}]}"
+        mkdir -p "$(dirname "$file_name")" # Create target directory for downloading
 
         if [[ "$link" == "git+"* ]]; then
             # Download as git
