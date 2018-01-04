@@ -18,6 +18,7 @@ After the above steps, install the `axiom` command and activate its build/execut
 `source ./install_command.sh`
 
 Now, you can start to build either the (untested) image or the official build pipeline of beta-software and execute them with:
+
 4. `./guest-images/dev/microzed-image-1.3/build.sh` or `./guest-images/dev/beta-software/build.sh`
 5. `./run_image.sh dev/microzed-image-1.3` or `./run_image.sh dev/beta-software`
 
