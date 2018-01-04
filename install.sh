@@ -119,16 +119,15 @@ function install_arch_packages() {
         qemu-user-static
         binfmt-support
     )
+    # Define which developer package set should be installed
+    local BASE_DEVEL=base-devel
+
     # ArchLinux is a rolling release distribution, thus updating database is required.
     pacman -Syy
 
-    # Define which developer package set should be installed
-    local BASE_DEVEL=base-devel
-    # Replace default(64-bit only) to multilib(32/64 bits)
-    pacman -Qs gcc-multilib > /dev/null && BASE_DEVEL=multilib-devel
     # Separate the developer package installation! Sometimes it might fail.
     pacman --noconfirm -S $BASE_DEVEL
-    [[ $? != 0 ]] && print_message_and_exit "Install $BASE_DEVEL"
+    [[ $? != 0 ]] && print_message_and_exit "Install BASE_DEVEL"
     pacman --noconfirm -S ${BASIC_DEPS[@]}
     [[ $? != 0 ]] && print_message_and_exit "Install BASIC_DEPS"
     pacman --noconfirm -S ${QEMU_DEPS[@]}
@@ -247,9 +246,9 @@ function command_exist() {
 }
 
 function install_arm_compiler() {
-    echo -e "#    ${COLOR_GREEN}Downloading and installing ARM compiler...${NC}"
     # Download arm-linux-gnueabi-gcc if not exists
     if ! command_exist arm-linux-gnueabi-gcc || ! command_exist arm-linux-gnueabi-g++; then # Not found
+        echo -e "#    ${COLOR_GREEN}Downloading and installing ARM compiler...${NC}"
         local file_path="${SCRIPT_DIR}/external/gcc-linaro-4.9-gnueabi.tar.xz"
         local dir_path="${file_path%%.tar*}"
         local link="https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabi.tar.xz"
