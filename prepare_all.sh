@@ -101,6 +101,7 @@ function prepare_xilinx_qemu() {
         ../configure \
             '--python=python2' \
             '--enable-fdt' '--disable-kvm' '--disable-xen' \
+            '--extra-cflags=-Wformat-truncation=0' \
             '--target-list=aarch64-softmmu'
         [[ $? != 0 ]] && print_message_and_exit "QEMU configure script"
     fi
