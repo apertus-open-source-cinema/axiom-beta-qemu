@@ -3,10 +3,6 @@ An apertus° AXIOM-beta execution environment for both developer/user.
 
 This repo contains the build environments for all AXIOM-beta scripts and images.
 
-# Prerequisite
-The __image_manager.py__ python scripts requires Python3 and two site packages. Please install them with the following command.
-`pip3 install logzero sh`
-
 # Instructions
 
 To prepare the build/execution environment, follow the steps:
