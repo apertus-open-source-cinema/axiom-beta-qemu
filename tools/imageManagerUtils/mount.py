@@ -1,12 +1,13 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
+# Python buildin modules
 import os
 import sys
 import subprocess
+import logging as logger
 
-import sh
-import logzero
-from logzero import logger
+# Utils designed for this script
+from . import sh
 
 IMAGE_DIR = os.environ.get('IMAGE_DIR')
 # The name of ROOTFS_DIR must be .rootfs for safety.

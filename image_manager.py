@@ -4,18 +4,16 @@
 # Import settings must be the first line to take effect on all custom modules
 from tools.imageManagerUtils import settings
 
+# Python buildin modules
 import os
 import sys
 import subprocess
 import re
-import logging
+import logging as logger
 from itertools import chain
 
-import sh
-import logzero
-from logzero import logger
-
 # Utils designed for this script
+from tools.imageManagerUtils import sh
 from tools.imageManagerUtils import imageParser
 from tools.imageManagerUtils import mount
 
@@ -25,12 +23,13 @@ IMAGE_DIR = os.environ.get('IMAGE_DIR')
 # The name of ROOTFS_DIR must be .rootfs for safety.
 ROOTFS_DIR = os.path.join(IMAGE_DIR, '.rootfs')
 
-# Set a minimum log level
-logzero.loglevel(logging.INFO)
-# Set up debug mode settings
-if os.environ.get('DEBUG'):
-    logzero.loglevel(logging.DEBUG)
-
+FORMAT = '{}[%(levelname)s]{} {}%(filename)s:%(lineno)d{} %(message)s'.format(
+        '\033[1;31m', # Red
+        '\033[0m',    # No color
+        '\033[1;32m', # Green
+        '\033[0m',    # No color
+        )
+logger.basicConfig(format=FORMAT)
 
 # ================ Util Functions ================
 def check_input_image_format(arg):

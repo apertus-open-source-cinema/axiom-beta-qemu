@@ -1,12 +1,15 @@
 #!/bin/bash
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
-# TODO Are the following packages important?? They might not be able to cross OS dist.
-# boxes, dh-autoreconf, gcc-arm-linux-gnueabi
-# Download gcc-arm-linux-gnueabi from Linaro is a good alternative,
-# which will be done in prepare.sh
+SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
+COLOR_RED='\033[1;31m'
+COLOR_GREEN='\033[1;32m'
+COLOR_YELLOW='\033[1;33m'
+NC='\033[0;00m'
 
 function install_debian_packages() {
+    echo -e "#    ${COLOR_GREEN}Installing packages for Debian...${NC}"
+
     local BASIC_DEPS=(
         sudo
         wget
@@ -66,6 +69,7 @@ function install_debian_packages() {
 }
 
 function install_arch_packages() {
+    echo -e "#    ${COLOR_GREEN}Installing packages for ArchLinux...${NC}"
     # Available in AUR: boxes dh-autoreconf
 
     # NOTE: Do not use base-devel directly!!!!!! It's conflict with gcc-libs-multilib
@@ -115,16 +119,15 @@ function install_arch_packages() {
         qemu-user-static
         binfmt-support
     )
+    # Define which developer package set should be installed
+    local BASE_DEVEL=base-devel
+
     # ArchLinux is a rolling release distribution, thus updating database is required.
     pacman -Syy
 
-    # Define which developer package set should be installed
-    local BASE_DEVEL=base-devel
-    # Replace default(64-bit only) to multilib(32/64 bits)
-    pacman -Qs gcc-multilib > /dev/null && BASE_DEVEL=multilib-devel
     # Separate the developer package installation! Sometimes it might fail.
     pacman --noconfirm -S $BASE_DEVEL
-    [[ $? != 0 ]] && print_message_and_exit "Install $BASE_DEVEL"
+    [[ $? != 0 ]] && print_message_and_exit "Install BASE_DEVEL"
     pacman --noconfirm -S ${BASIC_DEPS[@]}
     [[ $? != 0 ]] && print_message_and_exit "Install BASIC_DEPS"
     pacman --noconfirm -S ${QEMU_DEPS[@]}
@@ -143,6 +146,7 @@ function install_arch_packages() {
 }
 
 function install_centos_packages() {
+    echo -e "#    ${COLOR_GREEN}Installing packages for CentOS/Fedora...${NC}"
 
     # NOTE: Do not use base-devel directly!!!!!! It's conflict with gcc-libs-multilib
     local BASIC_DEPS=(
@@ -241,6 +245,26 @@ function command_exist() {
     fi
 }
 
+function install_arm_compiler() {
+    # Download arm-linux-gnueabi-gcc if not exists
+    if ! command_exist arm-linux-gnueabi-gcc || ! command_exist arm-linux-gnueabi-g++; then # Not found
+        echo -e "#    ${COLOR_GREEN}Downloading and installing ARM compiler...${NC}"
+        local file_path="${SCRIPT_DIR}/external/gcc-linaro-4.9-gnueabi.tar.xz"
+        local dir_path="${file_path%%.tar*}"
+        local link="https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabi.tar.xz"
+
+        [[ ! -f "$file_path" ]] && wget "$link" -O "$file_path"
+        mkdir -p "$dir_path"
+        echo -e "${COLOR_GREEN}decompress file $file_path${NC}"
+        tar -xf "$file_path" -C "$dir_path" --strip-components 1
+        echo -e "${COLOR_YELLOW}Please copy and paste the following line to your ~/.bashrc or ~/.zshrc${NC}"
+        echo "export PATH=\$PATH:${dir_path}/bin"
+        echo -e "\n\n"
+        # Make it temporarily work for this script.
+        export PATH=${dir_path}/bin:$PATH
+    fi
+}
+
 # Use package manager to identify the operating systems
 if command_exist apt-get; then
     echo "Debian, Mint, Ubuntu"
@@ -252,5 +276,7 @@ elif command_exist yum; then
     echo "CentOS, Fedora"
     install_centos_packages
 fi
+
+install_arm_compiler
 
 exit 0

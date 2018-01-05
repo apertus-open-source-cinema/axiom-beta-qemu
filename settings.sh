@@ -7,5 +7,5 @@ fi
 export IMAGE_DIR="$AXIOM_HOME/guest-images"
 # The name of ROOTFS_DIR must be rootfs for safety.
 export ROOTFS_DIR="$(readlink -f "${IMAGE_DIR}/.rootfs")"
-export VIRT_ROOT_DIR="${AXIOM_HOME}/virt-root"
+export VIRT_ROOT_DIR="${AXIOM_HOME}/external/virt-root"
 export RUN_QEMU_SCRIPT_PATH="${AXIOM_HOME}"

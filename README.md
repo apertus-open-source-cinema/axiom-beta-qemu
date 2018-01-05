@@ -3,10 +3,6 @@ An apertus° AXIOM-beta execution environment for both developer/user.
 
 This repo contains the build environments for all AXIOM-beta scripts and images.
 
-# Prerequisite
-The __image_manager.py__ python scripts requires Python3 and two site packages. Please install them with the following command.
-`pip3 install logzero sh`
-
 # Instructions
 
 To prepare the build/execution environment, follow the steps:
@@ -18,6 +14,7 @@ After the above steps, install the `axiom` command and activate its build/execut
 `source ./install_command.sh`
 
 Now, you can start to build either the (untested) image or the official build pipeline of beta-software and execute them with:
+
 4. `./guest-images/dev/microzed-image-1.3/build.sh` or `./guest-images/dev/beta-software/build.sh`
 5. `./run_image.sh dev/microzed-image-1.3` or `./run_image.sh dev/beta-software`
 

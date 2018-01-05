@@ -25,3 +25,7 @@ virt-root/
 .rootfs_e2fs
 .rootfs_mbr
 .rootfs_loops
+
+# ARM compiler
+external/gcc-linaro-4.9-gnueabi.tar.xz
+external/gcc-linaro-4.9-gnueabi

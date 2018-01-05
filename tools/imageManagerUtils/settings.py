@@ -1,6 +1,11 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 # This file helps to read settings from bash script into os.environ
+# The challenges of reading settings from bash scripts is getting the
+# deduced (interpreted) values. This script calls a subprocess to
+# run the target bash scripts and call "env".
+# By processing the standard output from the result, we can parse the
+# deduced (interpreted) values and update the current (Python) context.
 
 import os
 import sys

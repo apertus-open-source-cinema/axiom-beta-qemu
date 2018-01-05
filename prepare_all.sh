@@ -8,6 +8,22 @@ COLOR_GREEN='\033[1;32m'
 COLOR_YELLOW='\033[1;33m'
 NC='\033[0;00m'
 
+# Make the virtual root directory temporarily work in this tty session
+export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
+
+#######################################
+# Get response from user, the response is limited to y/n.
+# It will continue reading until user give y(Y)/n(N).
+# Globals:
+#   None
+# Arguments:
+#   <Message to user>
+#   <Default response when user hit ENTER directly>
+# Returns:
+#   None
+# Echos (string):
+#   The response from user
+#######################################
 function ask_response()
 {
     while true; do
@@ -20,22 +36,42 @@ function ask_response()
     done
 }
 
-# NOTE: return 0 when command not found and return 1 when found
-function check_command() {
+#######################################
+# Check whether the command exist in a safe way
+# Globals:
+#   None
+# Arguments:
+#   <command>
+# Returns:
+#   0: found, 1: NOT found
+#######################################
+function command_exist() {
     command_found=$(command -v "$1" 2> /dev/null)
     if [[ "$command_found" == "" ]]; then
-        return 0 # NOT found
+        return 1 # NOT found
     else
-        return 1 # Found
+        return 0 # Found
     fi
 }
 
+#######################################
+# Print useful message when something goes wrong and exit the script.
+# Globals:
+#   None
+# Arguments:
+#   <Message to user>
+# Returns:
+#   None
+#######################################
 function print_message_and_exit() {
     echo "Something went wrong?"
     echo -e "Possibly related to ${COLOR_YELLOW}${1}${NC}"
     exit 4
 }
 
+#######################################
+# Initialize the git submodules and other git repositories of this project.
+#######################################
 function init_git(){
     cd "$SCRIPT_DIR"
     # Shallow clone to save time
@@ -43,43 +79,64 @@ function init_git(){
     [[ $? != 0 ]] && print_message_and_exit "git submodule"
 }
 
+#######################################
+# Configure and compile the QEMU/Xilinx for emulating Zedboard/MicroZed.
+#######################################
 function prepare_xilinx_qemu() {
     echo -e "#    ${COLOR_GREEN}Prepare Xilinx qemu${NC}"
 
     cd "$SCRIPT_DIR/qemu-xilinx"
     git submodule update --init pixman dtc
-    # Reset all the changes made before (useful when applying patches)
+    # Reset all the changes made before (useful when applying patches).
     git reset --hard
     # Apply patches to fix bugs and compatibilities.
     git apply ../patches/*
 
+    # Create build directory for the emulator
     mkdir -p "$SCRIPT_DIR/qemu-xilinx/build"
+    # Configure only when this is the first time to build. No re-configuring required.
     cd "$SCRIPT_DIR/qemu-xilinx/build"
     if [[ ! -f ./config-host.mak ]]; then
-        # Only do configure when it is the first time executing this
-        ../configure '--python=python2' '--target-list=aarch64-softmmu' '--enable-fdt' '--disable-kvm' '--disable-xen'
+        # Configure with python2 (important!)
+        ../configure \
+            '--python=python2' \
+            '--enable-fdt' '--disable-kvm' '--disable-xen' \
+            '--extra-cflags=-Wformat-truncation=0' \
+            '--target-list=aarch64-softmmu'
         [[ $? != 0 ]] && print_message_and_exit "QEMU configure script"
     fi
+    # Build QEMU/Xilinx
     make -j$(nproc)
     [[ $? != 0 ]] && print_message_and_exit "QEMU make"
 }
 
+#######################################
+# Build and install 3rd-party commnads to local(user).
+# Some commands are listed here because of the version of those commands
+# are too old on some OS distributions.
+#######################################
 function prepare_external() {
     echo -e "#    ${COLOR_GREEN}Prepare external tools${NC}"
 
+    # Prepare the install directory for the commnads
     mkdir -p "${VIRT_ROOT_DIR}/bin" "${VIRT_ROOT_DIR}/sbin"
-    if check_command mbrfs; then
+
+    # MBRFS is a fuse-based command for mounting MBR partitioned image.
+    if ! command_exist mbrfs; then
         cd "${SCRIPT_DIR}/external/mbrfs"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/mbrfs"
         cp "${SCRIPT_DIR}/external/mbrfs/mbrfs" "${VIRT_ROOT_DIR}/sbin/mbrfs"
     fi
-    if check_command ext4fuse; then
+    # ext4fuse is a fuse-based command for mounting e2fs (ext2, ext3, ext4) file system.
+    if ! command_exist ext4fuse; then
         cd "${SCRIPT_DIR}/external/ext4fuse"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/ext4fuse"
         cp "$SCRIPT_DIR/external/ext4fuse/ext4fuse" "${VIRT_ROOT_DIR}/sbin/ext4fuse"
     fi
+    # mkfs.ext4 is a sub-command of e2fsprogs for building images without actually mounting them.
+    # Though it exists in all OS distributions, a recent version of e2fsprogs is required.
     if [[ "$(mkfs.ext4 2>&1 | grep root-directory)" == "" ]]; then
         # System mkfs.ext4 does not support root-directory option
         mkdir -p "${SCRIPT_DIR}/external/e2fsprogs/build"
@@ -89,7 +146,9 @@ function prepare_external() {
         make install
     fi
     # TODO Check what type of sfdisk would cause a problem, at least ArchLinux works
-    if check_command pacman; then
+    # sfdisk is a script-based command for image partitioning.
+    # Though it exists in all OS distributions, a recent version of sfdisk is required.
+    if ! command_exist pacman; then
         # System sfdisk does not support creating MBR partition table properly
         mkdir -p "${SCRIPT_DIR}/external/util-linux/build"
         cd "${SCRIPT_DIR}/external/util-linux/build"
@@ -98,44 +157,19 @@ function prepare_external() {
         make sfdisk -j$(nproc)
         cp ./sfdisk "${VIRT_ROOT_DIR}/sbin"
     fi
-    # Make the virtual root directory temporarily work in this tty session
-    export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
 }
 
+#######################################
+# Check whether all required binaries are installed for building/running this project.
+#######################################
 function test_binary_dep() {
     local cmds=(gcc git make wget curl sudo chroot fakeroot rsync)
+    cmds+=(arm-linux-gnueabi-gcc arm-linux-gnueabi-g++)
 
+    # Loop through and check commands
     for c in ${cmds[*]}; do
-        check_command "$c" && echo -e "Required command ${COLOR_RED}${c}${NC} not found"
+        ! command_exist "$c" && echo -e "Required command ${COLOR_RED}${c}${NC} not found"
     done
-
-    if check_command arm-linux-gnueabi-gcc || check_command arm-linux-gnueabi-g++; then # Not found
-        echo -e "${COLOR_RED}" \
-            "[REQUIRED]" \
-            "arm-linux-gnueabi-gcc is not found in \$PATH.\n" \
-            "  Please download it and set in the \$PATH" \
-            "${NC}\n"
-
-        if [[ $(ask_response "Download Linaro ARM compiler to ./external? (y/n)" "n") == "y" ]]; then
-            local file_path="${SCRIPT_DIR}/external/gcc-linaro-4.9-gnueabi.tar.xz"
-            local dir_path="${file_path%%.tar*}"
-            local link="https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabi.tar.xz"
-
-            [[ ! -f "$file_path" ]] && wget "$link" -O "$file_path"
-            mkdir -p "$dir_path"
-            echo -e "${COLOR_GREEN}decompress file $file_path${NC}"
-            tar -xf "$file_path" -C "$dir_path" --strip-components 1
-            echo -e "${COLOR_YELLOW}Please copy and paste the following line to your ~/.bashrc or ~/.zshrc${NC}"
-            echo "export PATH=\$PATH:${dir_path}/bin"
-            echo -e "\n\n"
-            # Make it temporarily work for this script.
-            export PATH=${dir_path}/bin:$PATH
-        else
-            echo "Linaro ARM gcc can be found here. Please downlaod it and add it to the \$PATH."
-            echo "https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabi.tar.xz"
-            exit 1
-        fi
-    fi
 }
 
 # A magic option to help facilitate build environment in other projects
