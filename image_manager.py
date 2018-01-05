@@ -23,6 +23,14 @@ IMAGE_DIR = os.environ.get('IMAGE_DIR')
 # The name of ROOTFS_DIR must be .rootfs for safety.
 ROOTFS_DIR = os.path.join(IMAGE_DIR, '.rootfs')
 
+FORMAT = '{}[%(levelname)s]{} {}%(filename)s:%(lineno)d{} %(message)s'.format(
+        '\033[1;31m', # Red
+        '\033[0m',    # No color
+        '\033[1;32m', # Green
+        '\033[0m',    # No color
+        )
+logger.basicConfig(format=FORMAT)
+
 # ================ Util Functions ================
 def check_input_image_format(arg):
     if arg is None or '@' not in arg:
