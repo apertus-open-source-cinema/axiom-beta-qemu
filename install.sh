@@ -52,6 +52,7 @@ function install_debian_packages() {
     )
     local EXTRA_DEPS=(
         qemu-user-static
+        boxes
     )
     apt-get -y -qq update
 
@@ -118,6 +119,7 @@ function install_arch_packages() {
     local AUR_DEPS=(
         qemu-user-static
         binfmt-support
+        boxes
     )
     # Define which developer package set should be installed
     local BASE_DEVEL=base-devel
