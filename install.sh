@@ -249,8 +249,8 @@ function install_arm_compiler() {
     # Download arm-linux-gnueabi-gcc if not exists
     if ! command_exist arm-linux-gnueabi-gcc || ! command_exist arm-linux-gnueabi-g++; then # Not found
         echo -e "#    ${COLOR_GREEN}Downloading and installing ARM compiler...${NC}"
-        local file_path="${SCRIPT_DIR}/external/gcc-linaro-4.9-gnueabi.tar.xz"
-        local dir_path="${file_path%%.tar*}"
+        local file_path="/tmp/gcc-linaro-4.9-gnueabi.tar.xz"
+        local dir_path="/opt/gcc-linaro-4.9-gnueabi"
         local link="https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-linux-gnueabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabi.tar.xz"
 
         [[ ! -f "$file_path" ]] && wget "$link" -O "$file_path"
