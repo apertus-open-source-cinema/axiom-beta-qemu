@@ -9,7 +9,7 @@ elif [[ -n "$BASH_VERSION" ]]; then # assume Bash
 fi
 
 export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
-export PATH=$PATH:"${AXIOM_HOME}/external/gcc-linaro-4.9-gnueabi/bin"
+export PATH=$PATH:"/opt/gcc-linaro-4.9-gnueabi/bin"
 echo "Installed shell function - axiom. The completion of all scripts and axiom command are now available."
 echo "\$AXIOM_HOME=${AXIOM_HOME}"
 
