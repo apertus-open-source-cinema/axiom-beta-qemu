@@ -9,7 +9,7 @@ COLOR_YELLOW='\033[1;33m'
 NC='\033[0;00m'
 
 # Make the virtual root directory temporarily work in this tty session
-export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
+export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH:/opt/gcc-linaro-4.9-gnueabi/bin
 
 #######################################
 # Compare two version numbers (greater than)
