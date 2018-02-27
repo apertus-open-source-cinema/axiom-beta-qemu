@@ -119,11 +119,18 @@ function prepare_xilinx_qemu() {
     # Configure only when this is the first time to build. No re-configuring required.
     cd "$SCRIPT_DIR/qemu-xilinx/build"
     if [[ ! -f ./config-host.mak ]]; then
+        # Add gcc flags to prevent errors when compiling
+        local cc_version=$(cc --version | head -n 1 | cut -f 3 -d " ")
+        local extra_c_flags=''
+        if version_gt $cc_version 7.0.0; then
+            extra_c_flags='--extra-cflags=-Wformat-truncation=0'
+        fi
+
         # Configure with python2 (important!)
         ../configure \
             '--python=python2' \
             '--enable-fdt' '--disable-kvm' '--disable-xen' \
-            '--extra-cflags=-Wformat-truncation=0' \
+            $extra_c_flags \
             '--target-list=aarch64-softmmu'
         [[ $? != 0 ]] && print_message_and_exit "QEMU configure script"
     fi
