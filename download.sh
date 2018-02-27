@@ -13,13 +13,13 @@ NC='\033[0m'
 # Format: [OUTPUT PATH]/<RENAMED COMPRESSED FILE NAME>
 # Where the OUTPUT PATH is optional since the compressed file might already contain
 # the directory hierarchy tree, i.e., release version or vendor/provider names.
-files=('dev/testimage-v1.3.tar.gz'
+files=('dev/testimage-v1.4.tar.gz'
        'dev/beta-software')
 
-links=('https://github.com/MedicineYeh/microzed-image/archive/v1.3.tar.gz'
+links=('https://github.com/MedicineYeh/microzed-image/archive/v1.4.tar.gz'
        'git+https://github.com/MedicineYeh/beta-software-wrapper')
 
-sha256sums=('6439c480e97ea1763ec62bfc6611db275f3a995743a391954b47cb5727670fe1'
+sha256sums=('ff819602fa37ccb7f34d831540d03d8c9e5592791ce1a63a2ee6291296d18f86'
             '')
 
 #######################################
