@@ -19,7 +19,8 @@ if not os.path.isfile(settings_path):
     print('Cannot find settings.sh in ' + MAIN_SCRIPT_PATH)
     exit(1)
 # This is a tricky way to read bash envs in the script
-env_str = subprocess.check_output('source {} && env'.format(settings_path), shell=True)
+env_str = subprocess.check_output(
+    'source {} && env'.format(settings_path), shell=True, executable='/bin/bash')
 # Transform to list of python strings (utf-8 encodings)
 env_str = env_str.decode('utf-8').split('\n')
 # Transform from a list to a list of pairs and filter out invalid formats

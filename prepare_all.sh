@@ -9,7 +9,21 @@ COLOR_YELLOW='\033[1;33m'
 NC='\033[0;00m'
 
 # Make the virtual root directory temporarily work in this tty session
-export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH
+export PATH="${VIRT_ROOT_DIR}/bin":"${VIRT_ROOT_DIR}/sbin":$PATH:/opt/gcc-linaro-4.9-gnueabi/bin
+
+#######################################
+# Compare two version numbers (greater than)
+# Globals:
+#   None
+# Arguments:
+#   <First version number>
+#   <Second version number>
+# Returns:
+#   true: First number is greater than the second number
+#######################################
+function version_gt() {
+    test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
+}
 
 #######################################
 # Get response from user, the response is limited to y/n.
@@ -74,8 +88,16 @@ function print_message_and_exit() {
 #######################################
 function init_git(){
     cd "$SCRIPT_DIR"
-    # Shallow clone to save time
-    git submodule update --init --depth 10
+    local git_version=$(git version | cut -f 3 -d " ")
+
+    if version_gt $git_version 2.14.0; then
+        # Shallow clone to save time
+        git submodule update --init --depth 10
+    else
+        # Old git version does not support shallow clone in some cases
+        # Read more: https://stackoverflow.com/a/17692710/8323343
+        git submodule update --init
+    fi
     [[ $? != 0 ]] && print_message_and_exit "git submodule"
 }
 
@@ -97,11 +119,18 @@ function prepare_xilinx_qemu() {
     # Configure only when this is the first time to build. No re-configuring required.
     cd "$SCRIPT_DIR/qemu-xilinx/build"
     if [[ ! -f ./config-host.mak ]]; then
+        # Add gcc flags to prevent errors when compiling
+        local cc_version=$(cc --version | head -n 1 | cut -f 3 -d " ")
+        local extra_c_flags=''
+        if version_gt $cc_version 7.0.0; then
+            extra_c_flags='--extra-cflags=-Wformat-truncation=0'
+        fi
+
         # Configure with python2 (important!)
         ../configure \
             '--python=python2' \
             '--enable-fdt' '--disable-kvm' '--disable-xen' \
-            '--extra-cflags=-Wformat-truncation=0' \
+            $extra_c_flags \
             '--target-list=aarch64-softmmu'
         [[ $? != 0 ]] && print_message_and_exit "QEMU configure script"
     fi
