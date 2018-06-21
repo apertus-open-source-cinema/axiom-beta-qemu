@@ -143,5 +143,5 @@ function _complete_axiom() {
 
 complete -F _complete_axiom axiom
 complete -F _complete_runQEMU runQEMU.sh
-complete -F _complete_image_manager image_manager.sh
+complete -F _complete_image_manager imageManager.py
 
