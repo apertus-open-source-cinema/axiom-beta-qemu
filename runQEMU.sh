@@ -18,8 +18,8 @@ QEMU_ARGS=()
 # QEMU_ARGS+=(-drive if=sd,driver=raw,cache=writeback,file=$IMAGE_DIR/data.ext3)
 
 # Debug traces
-#QEMU_ARGS+=(-trace enable=true,events=/tmp/events-vfio)
-#QEMU_ARGS+=(-mem-path /dev/hugepages)
+# QEMU_ARGS+=(-trace enable=true,events=/tmp/events-vfio)
+# QEMU_ARGS+=(-mem-path /dev/hugepages)
 
 #######################################
 # Find the location of run script from given relative/absolute path.
@@ -106,7 +106,7 @@ while [[ "$1" != "" ]]; do
         "-net" )
             generate_random_mac_addr
             open_tap
-            #QEMU_ARGS+=(-net nic,model=virtio,macaddr=$MAC_ADDR -net tap,vlan=0,ifname=tap0)
+            # QEMU_ARGS+=(-net nic,model=virtio,macaddr=$MAC_ADDR -net tap,vlan=0,ifname=tap0)
             QEMU_ARGS+=(-netdev type=tap,id=net0,ifname=tap0,vhost=on)
             QEMU_ARGS+=(-device virtio-net-pci,netdev=net0,mac=$MAC_ADDR)
             shift 1
