@@ -146,6 +146,6 @@ function _complete_axiom() {
 
 compdef _complete_axiom axiom
 compdef _complete_runQEMU runQEMU.sh
-compdef _complete_image_manager image_manager.sh
+compdef _complete_image_manager imageManager.py
 autoload colors && colors
 

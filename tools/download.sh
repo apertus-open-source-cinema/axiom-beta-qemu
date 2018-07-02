@@ -2,7 +2,7 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")"
-IMAGE_DIR="$SCRIPT_PATH/guest-images"
+IMAGE_DIR="$SCRIPT_PATH/../guest-images"
 COLOR_RED='\033[1;31m'
 COLOR_GREEN='\033[1;32m'
 COLOR_YELLOW='\033[1;33m'

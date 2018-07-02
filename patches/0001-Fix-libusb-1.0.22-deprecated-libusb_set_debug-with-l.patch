@@ -1,0 +1,53 @@
+From 7510003abbc412a744388b067384fde9ed55d64e Mon Sep 17 00:00:00 2001
+From: Medicine Yeh <medicinehy@gmail.com>
+Date: Thu, 21 Jun 2018 14:53:28 +0800
+Subject: [PATCH] Fix libusb-1.0.22 deprecated libusb_set_debug with
+ libusb_set_option
+
+libusb-1.0.22 marked libusb_set_debug deprecated
+it is replaced with
+libusb_set_option(libusb_context, LIBUSB_OPTION_LOG_LEVEL, libusb_log_level);
+
+details here: libusb/libusb@539f22e
+
+Warning here:
+
+  CC      hw/usb/host-libusb.o
+/builds/xen/src/qemu-xen/hw/usb/host-libusb.c: In function 'usb_host_init':
+/builds/xen/src/qemu-xen/hw/usb/host-libusb.c:250:5: error: 'libusb_set_debug' is deprecated: Use libusb_set_option instead [-Werror=deprecated-declarations]
+     libusb_set_debug(ctx, loglevel);
+     ^~~~~~~~~~~~~~~~
+In file included from /builds/xen/src/qemu-xen/hw/usb/host-libusb.c:40:0:
+/usr/include/libusb-1.0/libusb.h:1300:18: note: declared here
+ void LIBUSB_CALL libusb_set_debug(libusb_context *ctx, int level);
+                  ^~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+make: *** [/builds/xen/src/qemu-xen/rules.mak:66: hw/usb/host-libusb.o] Error 1
+make: Leaving directory '/builds/xen/src/xen/tools/qemu-xen-build'
+
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+Message-id: 20180405132046.4968-1-git@johnthomson.fastmail.com.au
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+---
+ hw/usb/host-libusb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/hw/usb/host-libusb.c b/hw/usb/host-libusb.c
+index 1b0be07..dc0a8fe 100644
+--- a/hw/usb/host-libusb.c
++++ b/hw/usb/host-libusb.c
+@@ -247,7 +247,11 @@ static int usb_host_init(void)
+     if (rc != 0) {
+         return -1;
+     }
++#if LIBUSB_API_VERSION >= 0x01000106
++    libusb_set_option(ctx, LIBUSB_OPTION_LOG_LEVEL, loglevel);
++#else
+     libusb_set_debug(ctx, loglevel);
++#endif
+ #ifdef CONFIG_WIN32
+     /* FIXME: add support for Windows. */
+ #else
+-- 
+2.17.1
+

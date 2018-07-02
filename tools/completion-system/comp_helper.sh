@@ -5,7 +5,7 @@ axiom_loops_rootfs_dir="$(readlink -f "${AXIOM_HOME}/.rootfs_loops")"
 axiom_comp_rootfs=""
 
 function image_manager() {
-    "$AXIOM_HOME/image_manager.py" "$@"
+    "$AXIOM_HOME/imageManager.py" "$@"
 }
 
 function _get_image_list() {

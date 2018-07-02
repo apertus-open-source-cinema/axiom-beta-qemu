@@ -5,7 +5,7 @@ set timeout -1;
 if {$argc > 3} {
     send_user "Arguments: <command> <repeated times>\n";
     send_user "ATTENTION: <command> must be in double quote if it contains arguments\n";
-    send_user "\tEx: ./do_test.expect \"ls -al\" 1\n";
+    send_user "\tEx: ./doTest.expect \"ls -al\" 1\n";
     exit;
 }
 

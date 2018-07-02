@@ -2,7 +2,7 @@
 # Copyright (c) 2017, MIT Licensed, Medicine Yeh
 
 SCRIPT_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
-source "${SCRIPT_DIR}/settings.sh"
+source "$SCRIPT_DIR/../settings.sh"
 COLOR_RED='\033[1;31m'
 COLOR_GREEN='\033[1;32m'
 COLOR_YELLOW='\033[1;33m'
@@ -87,7 +87,7 @@ function print_message_and_exit() {
 # Initialize the git submodules and other git repositories of this project.
 #######################################
 function init_git(){
-    cd "$SCRIPT_DIR"
+    cd "$AXIOM_HOME"
     local git_version=$(git version | cut -f 3 -d " ")
 
     if version_gt $git_version 2.14.0; then
@@ -107,17 +107,17 @@ function init_git(){
 function prepare_xilinx_qemu() {
     echo -e "#    ${COLOR_GREEN}Prepare Xilinx qemu${NC}"
 
-    cd "$SCRIPT_DIR/qemu-xilinx"
-    git submodule update --init pixman dtc
+    cd "$AXIOM_HOME/qemu-xilinx"
+    git submodule update --init dtc
     # Reset all the changes made before (useful when applying patches).
     git reset --hard
     # Apply patches to fix bugs and compatibilities.
     git apply ../patches/*
 
     # Create build directory for the emulator
-    mkdir -p "$SCRIPT_DIR/qemu-xilinx/build"
+    mkdir -p "$AXIOM_HOME/qemu-xilinx/build"
     # Configure only when this is the first time to build. No re-configuring required.
-    cd "$SCRIPT_DIR/qemu-xilinx/build"
+    cd "$AXIOM_HOME/qemu-xilinx/build"
     if [[ ! -f ./config-host.mak ]]; then
         # Add gcc flags to prevent errors when compiling
         local cc_version=$(cc --version | head -n 1 | cut -f 3 -d " ")
@@ -152,24 +152,24 @@ function prepare_external() {
 
     # MBRFS is a fuse-based command for mounting MBR partitioned image.
     if ! command_exist mbrfs; then
-        cd "${SCRIPT_DIR}/external/mbrfs"
+        cd "${AXIOM_HOME}/external/mbrfs"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/mbrfs"
-        cp "${SCRIPT_DIR}/external/mbrfs/mbrfs" "${VIRT_ROOT_DIR}/sbin/mbrfs"
+        cp "${AXIOM_HOME}/external/mbrfs/mbrfs" "${VIRT_ROOT_DIR}/sbin/mbrfs"
     fi
     # ext4fuse is a fuse-based command for mounting e2fs (ext2, ext3, ext4) file system.
     if ! command_exist ext4fuse; then
-        cd "${SCRIPT_DIR}/external/ext4fuse"
+        cd "${AXIOM_HOME}/external/ext4fuse"
         make
         [[ $? != 0 ]] && print_message_and_exit "make external/ext4fuse"
-        cp "$SCRIPT_DIR/external/ext4fuse/ext4fuse" "${VIRT_ROOT_DIR}/sbin/ext4fuse"
+        cp "${AXIOM_HOME}/external/ext4fuse/ext4fuse" "${VIRT_ROOT_DIR}/sbin/ext4fuse"
     fi
     # mkfs.ext4 is a sub-command of e2fsprogs for building images without actually mounting them.
     # Though it exists in all OS distributions, a recent version of e2fsprogs is required.
     if [[ "$(mkfs.ext4 2>&1 | grep root-directory)" == "" ]]; then
         # System mkfs.ext4 does not support root-directory option
-        mkdir -p "${SCRIPT_DIR}/external/e2fsprogs/build"
-        cd "${SCRIPT_DIR}/external/e2fsprogs/build"
+        mkdir -p "${AXIOM_HOME}/external/e2fsprogs/build"
+        cd "${AXIOM_HOME}/external/e2fsprogs/build"
         ../configure --prefix="$VIRT_ROOT_DIR"
         make -j$(nproc)
         make install
@@ -179,8 +179,8 @@ function prepare_external() {
     # Though it exists in all OS distributions, a recent version of sfdisk is required.
     if ! command_exist pacman; then
         # System sfdisk does not support creating MBR partition table properly
-        mkdir -p "${SCRIPT_DIR}/external/util-linux/build"
-        cd "${SCRIPT_DIR}/external/util-linux/build"
+        mkdir -p "${AXIOM_HOME}/external/util-linux/build"
+        cd "${AXIOM_HOME}/external/util-linux/build"
         ../autogen.sh
         ../configure --prefix="$VIRT_ROOT_DIR"
         make sfdisk -j$(nproc)
@@ -210,7 +210,7 @@ if [[ "$1" == "-i" ]]; then
     exit 0
 fi
 test_binary_dep
-init_git
+#init_git
 prepare_external
 prepare_xilinx_qemu
 
